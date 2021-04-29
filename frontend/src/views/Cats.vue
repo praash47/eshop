@@ -17,10 +17,10 @@
 		</div>
 		<!-- End Breadcrumbs -->
         <h1>Categories</h1>
-        <div class="categories" v-for="cat in categories" :key="cat.catid">
-            <h2>{{ cat.name }} </h2>
+        <div class="categories" v-for="(cat_name, index) in categories.category" :key="cat_name">
+            <h2>{{ cat_name }} </h2>
             <div class="sub-categories">
-                <p v-for="(subcat, index) in cat.subcategories" :key="index">
+                <p v-for="subcat in categories.subcategories[index]" :key="subcat">
                     {{ subcat }}
                 </p>
             </div>
@@ -28,28 +28,48 @@
     </div>
 </template>
 <script>
+import { sendRequest } from './request'
+
 export default {
     data () {
         return {
-            'categories': [{
-                'catid': 1,
-                'name': 'Jeans',
-                'subcategories': ['Denim', 'Loose', 'Mom Jeans', 'Dad Jeans', 'Boyfriend Jeans', 'Belly',
-                'Tight', 'Fitting'],
-            }, {
-                'catid': 2,
-                'name': 'Gadgets',
-                'subcategories': ['Laptop', 'Smartwatch', 'Mobile Phones', 'Earbuds', 'Tablets', 'Cameras',
-                'Desktop PCs', 'Router'],
-            }, {
-                'catid': 3,
-                'name': 'Stationery',
-                'subcategories': ['Pen', 'Copy', 'Pencil']
-            }, {
-                'catid': 4,
-                'name': 'BT21',
-                'subcategories': ['RJ', 'Shooky', 'Mang', 'Koya', 'Chimmy', 'Tata', 'Cookie']
-            }]
+            'categories': {
+                'category': [],
+                'subcategories': []
+            },
+            'category_res': '',
+            'subcategory_res': '',
+        }
+    },
+    created () {
+        this.fetchCategories()
+    },
+    methods: {
+        fetchCategories: function() {
+            var vm = this
+            
+            let rtocats = sendRequest('post', 'http://127.0.0.1:8000/server/categories/')
+            rtocats.then(function(response) {
+                vm.category_res = response['data']
+     
+                let rtosubcats = sendRequest('post', 'http://127.0.0.1:8000/server/subcategories/')
+                rtosubcats.then(function(response) {
+                    vm.subcategory_res = response['data']
+
+                    for (var i=0; i<vm.category_res.length; i++) {
+                        vm.categories['category'].push(vm.category_res[i]['cat_name'])
+                        var specific_sub_cats = []
+                        for (var j=0; j<vm.subcategory_res.length; j++) {
+                            if (vm.category_res[i]['id'] == vm.subcategory_res[j]['category']) {
+                                specific_sub_cats.push(vm.subcategory_res[j]['subcat_name'])
+                            }
+                        }
+                        vm.categories['subcategories'].push(specific_sub_cats)
+                    }
+
+                    console.log(vm.categories)
+                });
+            });
         }
     }
 }

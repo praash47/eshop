@@ -137,7 +137,7 @@
 						</div>
 					</div>
 					<div class="col-lg-9 col-md-8 col-12">
-                        <ProductsShowcase :data="products" />
+                        <ProductsShowcase :data="productslist" />
 					</div>
 				</div>
 			</div>
@@ -148,7 +148,7 @@
 <script>
 import ProductsShowcase from '@/components/home/ProductsShowcase.vue'
 export default {
-    props: ['products'],
+    props: ['productslist'],
     components: {
         ProductsShowcase
     },

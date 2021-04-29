@@ -4,8 +4,8 @@ from django.views.generic import ListView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ContactResponseSerializer, ProductSerializer
-from .models import ContactResponse, Product
+from .serializers import ContactResponseSerializer, ProductSerializer, CategorySerializer, SubCategorySerializer
+from .models import ContactResponse, Product, Category, SubCategory
 
 class ContactView(APIView):
     model = ContactResponse
@@ -43,3 +43,37 @@ class ProductView(APIView):
             serializer = ProductSerializer(qs, many=True)
              
             return Response(serializer.data)
+
+class CategoryView(APIView):
+    model = Category
+
+    def get(self, request, *args, **kwargs):
+        qs = Category.objects.all()
+
+        serializer = CategorySerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        qs = Category.objects.all()
+
+        serializer = CategorySerializer(qs, many=True)
+
+        return Response(serializer.data)
+
+class SubCategoryView(APIView):
+    model = SubCategory
+
+    def get(self, request, *args, **kwargs):
+        qs = SubCategory.objects.all()
+
+        serializer = SubCategorySerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        qs = SubCategory.objects.all()
+        
+        serializer = SubCategorySerializer(qs, many=True)
+            
+        return Response(serializer.data)
