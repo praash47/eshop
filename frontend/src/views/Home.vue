@@ -5,7 +5,7 @@
       <Slider />
     </div>
     <FeaturedCats />
-    <ProductsShowcase title="Featured Products" :data="products" />
+    <ProductsShowcase title="Featured Products" :data="productslist" />
     <ProductsShowcase title="Trending Items" :data="trendings"/>
     <ProductsShowcase title="New Arrivals" :data="trendings" />
     <ProductsShowcase title="Offers" :data="trendings" />
@@ -20,6 +20,7 @@ import ProductsShowcase from '../components/home/ProductsShowcase.vue'
 
 export default {
   name: 'Eshop',
+  props: ['productslist'],
   components: {
     Categories,
     Slider,
@@ -39,7 +40,6 @@ export default {
         {'id': 7, 'product_name': 'Fan', 'price': 600},
         {'id': 8, 'product_name': 'Clock', 'price': 300},
       ],
-      products: '',
     }
   }
 }
