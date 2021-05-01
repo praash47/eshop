@@ -2,50 +2,32 @@
   <div class="col-lg-3">
     <div class="all-category">
       <h3 class="cat-heading"><i class="fa fa-bars" aria-hidden="true"></i>CATEGORIES</h3>
-      <ul class="main-category">
-        <li><a href="#">New Arrivals <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-          <ul class="sub-category">
-            <li><a href="#">accessories</a></li>
-            <li><a href="#">best selling</a></li>
-            <li><a href="#">top 100 offer</a></li>
-            <li><a href="#">sunglass</a></li>
-            <li><a href="#">watch</a></li>
-            <li><a href="#">man’s product</a></li>
-            <li><a href="#">ladies</a></li>
-            <li><a href="#">westrn dress</a></li>
-            <li><a href="#">denim </a></li>
+      <ul class="main-category" v-for="(subcats, cat, index) in catslist" :key="index">
+        <li v-if="index < 10">
+          <a href="#">
+            {{ cat }} 
+            <i class="fa fa-angle-right" aria-hidden="true" v-if="subcats.length > 0"></i>
+          </a>
+          <ul class="sub-category" v-if="subcats.length > 0">
+            <li v-for="subcat in subcats" :key="subcat">
+              <a href="#">{{ subcat }} </a>
+            </li>
           </ul>
         </li>
-        <li class="main-category"><a href="#">best selling <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-          <ul class="sub-category">
-            <li><a href="#">accessories</a></li>
-            <li><a href="#">best selling</a></li>
-            <li><a href="#">top 100 offer</a></li>
-            <li><a href="#">sunglass</a></li>
-            <li><a href="#">watch</a></li>
-            <li><a href="#">man’s product</a></li>
-            <li><a href="#">ladies</a></li>
-            <li><a href="#">westrn dress</a></li>
-            <li><a href="#">denim </a></li>
-          </ul>
-        </li>
-        <li><a href="#">accessories</a></li>
-        <li><a href="#">top 100 offer</a></li>
-        <li><a href="#">sunglass</a></li>
-        <li><a href="#">watch</a></li>
-        <li><a href="#">man’s product</a></li>
-        <li><a href="#">ladies</a></li>
-        <li><a href="#">westrn dress</a></li>
-        <li><a href="#">denim </a></li>
       </ul>
     </div>
   </div>
 </template>
+<script>
+export default {
+  name: 'Categories',
+  props: ['catslist']
+}
+</script>
 <style>
 .all-category {
     color: #fff;
     background: transparent;
-    position: relative;
     background: #f7941d;
 }
 .all-category h3{
@@ -67,6 +49,7 @@
     -webkit-box-shadow: 0px 5px 15px #0000000a;
     -moz-box-shadow: 0px 5px 15px #0000000a;
     box-shadow: 0px 5px 15px #0000000a;
+    position: relative;
 }
 .main-category li{
     display:block;

@@ -105,7 +105,7 @@
 </div>
 </template>
 <script>
-import { sendRequest } from './request.js'
+import { sendRequest } from './functions.js'
 
 export default {
   data () {

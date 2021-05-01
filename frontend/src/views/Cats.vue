@@ -17,59 +17,29 @@
 		</div>
 		<!-- End Breadcrumbs -->
         <h1>Categories</h1>
-        <div class="categories" v-for="(cat_name, index) in categories.category" :key="cat_name">
-            <h2>{{ cat_name }} </h2>
-            <div class="sub-categories">
-                <p v-for="subcat in categories.subcategories[index]" :key="subcat">
-                    {{ subcat }}
-                </p>
-            </div>
+        <div class="all-categories">   
+            <div class="collapsible" v-for="(subcats, cat, index) in cats" :key="index">
+                <div class="imgBx">
+                    <h2>{{ cat }}</h2>
+                    <img src="../assets/test.jpg">
+                    <span @click="toggleCollapse" v-if="subcats.length > 0">▼</span>
+                </div>
+                <div class="collapsible-contents">       
+                    <div class="category" v-for="subcat in subcats" :key="subcat">{{ subcat }}</div>
+                </div>
+            </div>  
         </div>
     </div>
 </template>
 <script>
-import { sendRequest } from './request'
-
 export default {
-    data () {
-        return {
-            'categories': {
-                'category': [],
-                'subcategories': []
-            },
-            'category_res': '',
-            'subcategory_res': '',
-        }
-    },
-    created () {
-        this.fetchCategories()
-    },
+    props: ['cats'],
     methods: {
-        fetchCategories: function() {
-            var vm = this
-            
-            let rtocats = sendRequest('post', 'http://127.0.0.1:8000/server/categories/')
-            rtocats.then(function(response) {
-                vm.category_res = response['data']
-     
-                let rtosubcats = sendRequest('post', 'http://127.0.0.1:8000/server/subcategories/')
-                rtosubcats.then(function(response) {
-                    vm.subcategory_res = response['data']
-
-                    for (var i=0; i<vm.category_res.length; i++) {
-                        vm.categories['category'].push(vm.category_res[i]['cat_name'])
-                        var specific_sub_cats = []
-                        for (var j=0; j<vm.subcategory_res.length; j++) {
-                            if (vm.category_res[i]['id'] == vm.subcategory_res[j]['category']) {
-                                specific_sub_cats.push(vm.subcategory_res[j]['subcat_name'])
-                            }
-                        }
-                        vm.categories['subcategories'].push(specific_sub_cats)
-                    }
-
-                    console.log(vm.categories)
-                });
-            });
+        toggleCollapse: function (event) {
+           let arrow = event.target
+           arrow.classList.toggle("active")
+           let collapsingContent = arrow.parentNode.nextSibling
+           collapsingContent.classList.toggle("active")
         }
     }
 }
@@ -78,18 +48,64 @@ export default {
 h1 {
     margin: 10px;
 }
-.categories {
-    border: 1px solid black;
-    border-radius: 20px;
-    margin: 20px;
-}
-.sub-categories {
+.all-categories {
     display: flex;
     flex-wrap: wrap;
-    margin: 20px
+    justify-content: center;
 }
-.sub-categories p {
-    width: 200px;
-    margin: 20px 0;
+.collapsible .collapsible-contents {
+    display: none;
+}
+.collapsible-contents.active {
+    display: block;
+}
+.imgBx {
+    position: relative;
+}
+.imgBx img {
+    width: 60%;
+}
+.imgBx h2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+}
+.imgBx span {
+    position: absolute;
+    font-size: 1.2em;
+    padding: 2px 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+    right: 5px;
+    cursor: pointer;
+}
+.imgBx span.active {
+    transform: rotateX(180deg) translateY(50%);
+}
+.collapsible {
+    width: 18%;
+    border: 1px solid gray;
+    margin: 5px;
+    border-radius: 5%;
+}
+@media (max-width: 750px) {
+    .collapsible {
+        width: 30%;
+    }
+}
+@media (max-width: 500px) {
+    .collapsible {
+        width: 45%;
+    }
+}
+@media (max-width: 350px) {
+    .collapsible {
+        width: 90%;
+    }
 }
 </style>

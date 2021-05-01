@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="row">      
-      <Categories />
+      <Categories :catslist="cats" />
       <Slider />
     </div>
     <FeaturedCats />
@@ -20,7 +20,7 @@ import ProductsShowcase from '../components/home/ProductsShowcase.vue'
 
 export default {
   name: 'Eshop',
-  props: ['productslist'],
+  props: ['productslist', 'cats'],
   components: {
     Categories,
     Slider,
