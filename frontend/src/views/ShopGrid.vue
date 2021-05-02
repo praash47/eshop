@@ -53,25 +53,20 @@
                             <div class="single-widget category">
                                 <h3 class="title">Categories</h3>
                                 <ul class="categor-list">
-                                    <li><a href="#">T-shirts</a></li>
-                                    <li><a href="#">jacket</a></li>
-                                    <li><a href="#">jeans</a></li>
-                                    <li><a href="#">sweatshirts</a></li>
-                                    <li><a href="#">trousers</a></li>
-                                    <li><a href="#">kitwears</a></li>
-                                    <li><a href="#">accessories</a></li>
+                                    <li v-for="(values, cat, index) in cats" :key="index">
+                                        <router-link :to="'/shop-grid/' + cat.toLowerCase()">{{ cat }}</router-link>
+                                    </li>
                                 </ul>
                             </div>
                             <!--/ End Single Widget -->
                             <!-- Single Widget -->
                             <div class="single-widget category">
                                 <h3 class="title">Sub Categories</h3>
-                                <ul class="categor-list">
+                                <ul class="categor-list" v-if="cats">
+                                    <p style="color: red; opacity: 0.5;">Select a category here to see the list of sub-categories</p>
+                                </ul>
+                                <ul class="categor-list" v-else>
                                     <li><a href="#">Forever</a></li>
-                                    <li><a href="#">giordano</a></li>
-                                    <li><a href="#">abercrombie</a></li>
-                                    <li><a href="#">ecko united</a></li>
-                                    <li><a href="#">zara</a></li>
                                 </ul>
                             </div>
                             <!--/ End Single Widget -->
@@ -137,7 +132,38 @@
 						</div>
 					</div>
 					<div class="col-lg-9 col-md-8 col-12">
-                        <ProductsShowcase :data="productslist" />
+                        <div class="row">
+							<div class="col-12">
+								<!-- Shop Top -->
+								<div class="shop-top">
+									<div class="shop-shorter">
+										<div class="single-shorter">
+											<label>Show :</label>
+											<select style="display: none;">
+												<option selected="selected">09</option>
+												<option>15</option>
+												<option>25</option>
+												<option>30</option>
+											</select><div class="nice-select" tabindex="0"><span class="current">09</span><ul class="list"><li data-value="09" class="option selected">09</li><li data-value="15" class="option">15</li><li data-value="25" class="option">25</li><li data-value="30" class="option">30</li></ul></div>
+										</div>
+										<div class="single-shorter">
+											<label>Sort By :</label>
+											<select style="display: none;">
+												<option selected="selected">Name</option>
+												<option>Price</option>
+												<option>Size</option>
+											</select><div class="nice-select" tabindex="0"><span class="current">Name</span><ul class="list"><li data-value="Name" class="option selected">Name</li><li data-value="Price" class="option">Price</li><li data-value="Size" class="option">Size</li></ul></div>
+										</div>
+									</div>
+								</div>
+								<!--/ End Shop Top -->
+							</div>
+						</div>
+                        <div v-if="$route.params.catName" class="results">Showing you results of <strong>{{ $route.params.catName }}</strong><router-link class="close" to="/shop-grid">x</router-link></div>
+                        <div class="product-grid">
+                            <SingleProduct class="product-item" v-for="(item, index) in productslist" :key="index" :price="item.price" :name="item.product_name"
+                            :img_path="'http://127.0.0.1:8000' + item.img1" />
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -146,11 +172,11 @@
     </div>
 </template>
 <script>
-import ProductsShowcase from '@/components/home/ProductsShowcase.vue'
+import SingleProduct from '@/components/SingleProduct.vue'
 export default {
-    props: ['productslist'],
+    props: ['productslist', 'cats'],
     components: {
-        ProductsShowcase
+        SingleProduct
     },
     data () {
         return {
@@ -166,6 +192,54 @@ export default {
                 {'id': 8, 'product_name': 'Clock', 'price': 300},
             ]
         }
+    },
+    watch: {
+        $route() {
+            this.filterProductData()
+        }
+    },
+    methods: {
+        filterProductData: function () {
+            // let subcats = ''
+            // for (let cat in this.cats) {
+            //     if(cat.toLowerCase() == this.$route.params.catName) {
+            //         subcats = this.cats[cat]['subcatids']
+            //     }
+            // }
+        }
     }
 }
 </script>
+<style scoped>
+.product-grid {
+    width: 100%;
+    margin: 20px auto;
+    columns: 3;
+    column-gap: 40px;
+}
+.product-grid .product-item {
+    width: 100%;
+    margin: 0 0 20px;
+    padding: 10px;
+    overflow: hidden;
+    break-inside: avoid; 
+}
+@media (max-width: 1000px) {
+    .product-grid {
+        columns: 2;
+    }
+}
+@media (max-width: 450px) {
+    .product-grid {
+        columns: 1;
+    }
+}
+.results {
+    background: lightgray;
+    color: black;
+    padding: 10px;
+}
+.close {
+    cursor: pointer;
+}
+</style>

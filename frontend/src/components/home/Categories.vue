@@ -2,14 +2,14 @@
   <div class="col-lg-3">
     <div class="all-category">
       <h3 class="cat-heading"><i class="fa fa-bars" aria-hidden="true"></i>CATEGORIES</h3>
-      <ul class="main-category" v-for="(subcats, cat, index) in catslist" :key="index">
+      <ul class="main-category" v-for="(values, cat, index) in catslist" :key="index">
         <li v-if="index < 10">
-          <a href="#">
+          <router-link :to="'/shop-grid/' + cat.toLowerCase()">
             {{ cat }} 
-            <i class="fa fa-angle-right" aria-hidden="true" v-if="subcats.length > 0"></i>
-          </a>
-          <ul class="sub-category" v-if="subcats.length > 0">
-            <li v-for="subcat in subcats" :key="subcat">
+            <i class="fa fa-angle-right" aria-hidden="true" v-if="values.subcats.length > 0"></i>
+          </router-link>
+          <ul class="sub-category" v-if="values.subcats.length > 0">
+            <li v-for="subcat in values.subcats" :key="subcat">
               <a href="#">{{ subcat }} </a>
             </li>
           </ul>

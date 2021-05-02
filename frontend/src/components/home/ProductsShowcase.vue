@@ -4,7 +4,7 @@
         <div class="card-deck">
             <div v-for="(item, index) in data" :key="item.id">
                 <SingleProduct v-if="index < 4" :price="item.price" :name="item.product_name"
-                :img_path="'http://127.0.0.1:8000' + item.img1"/>
+                :img_path="'http://127.0.0.1:8000' + item.img1" class="product"/>
             </div>
         </div>
     </div>
@@ -23,6 +23,9 @@
     display: flex;
     justify-content: center;
     align-items: center;    
+}
+.product img {
+    width: 100px;
 }
 </style>
 <script>

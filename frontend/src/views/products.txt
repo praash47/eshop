@@ -1,0 +1,11 @@
+let data = {
+        'type': 'fetch',
+        'to': 'all_products'
+};
+let r = sendRequest('post', 'http://127.0.0.1:8000/server/products/', data);
+      r.then(function(response) {
+        vm.products = response['data']
+      })
+.finally(function() {
+})	      
+      

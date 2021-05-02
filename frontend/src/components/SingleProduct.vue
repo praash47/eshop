@@ -17,9 +17,6 @@ export default {
 }
 </script>
 <style scoped>
-.card {
-    width: 300px;
-}
 .card-body a {
     color: #fff;
     text-decoration: none;

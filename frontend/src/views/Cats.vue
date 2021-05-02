@@ -18,14 +18,14 @@
 		<!-- End Breadcrumbs -->
         <h1>Categories</h1>
         <div class="all-categories">   
-            <div class="collapsible" v-for="(subcats, cat, index) in cats" :key="index">
+            <div class="collapsible" v-for="(values, cat, index) in cats" :key="index">
                 <div class="imgBx">
-                    <h2>{{ cat }}</h2>
-                    <img src="../assets/test.jpg">
-                    <span @click="toggleCollapse" v-if="subcats.length > 0">▼</span>
+                    <h2><router-link :to="'/shop-grid/' + cat.toLowerCase()">{{ cat }}</router-link></h2>
+                    <img :src="'http://127.0.0.1:8000' + values.image">
+                    <span @click="toggleCollapse" v-if="values.subcats.length > 0">▼</span>
                 </div>
                 <div class="collapsible-contents">       
-                    <div class="category" v-for="subcat in subcats" :key="subcat">{{ subcat }}</div>
+                    <div class="category" v-for="subcat in values.subcats" :key="subcat">{{ subcat }}</div>
                 </div>
             </div>  
         </div>

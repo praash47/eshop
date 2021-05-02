@@ -57,6 +57,11 @@ const routes = [
     name: 'Shop Grid',
     component: () => import('../views/ShopGrid.vue')
   },
+  {
+    path: '/shop-grid/:catName',
+    name: 'Category',
+    component: () => import('../views/ShopGrid.vue')
+  },
 ]
 
 const router = createRouter({
