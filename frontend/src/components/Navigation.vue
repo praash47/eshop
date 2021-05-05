@@ -12,17 +12,17 @@
                               <div class="nav-inner">
                                 <ul class="nav main-menu menu navbar-nav">
                                   <li><router-link to="/">Home</router-link></li>
-                                  <li><router-link to="cats">Categories</router-link></li>
+                                  <li><router-link to="/cats">Categories</router-link></li>
                                   <li class="shop-allaga">Shop <i class="ti-angle-down"></i>
                                       <ul class="dropdown">
-                                          <li><router-link to="shop-grid">Shop Grid</router-link></li>
-                                          <li><router-link to="cart">Cart</router-link></li>
-                                          <li><router-link to="checkout">Checkout</router-link></li>
-                                          <li><router-link to="orders">Orders</router-link></li>
+                                          <li><router-link to="/shop-grid">Shop Grid</router-link></li>
+                                          <li><router-link to="/cart">Cart</router-link></li>
+                                          <li><router-link to="/checkout">Checkout</router-link></li>
+                                          <li><router-link to="/orders">Orders</router-link></li>
                                       </ul>
                                   </li>
-                                  <li><router-link to="about">About</router-link></li>
-                                  <li><router-link to="contact">Contact</router-link></li>
+                                  <li><router-link to="/about">About</router-link></li>
+                                  <li><router-link to="/contact">Contact</router-link></li>
                                 </ul>
                               </div>
                             </div>

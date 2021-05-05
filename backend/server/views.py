@@ -90,7 +90,7 @@ class ProductView(APIView):
                 else:
                     qs = qs.order_by('product_name')
                 
-                if request.data['order'] == 'desc':
+                if request.data['ordered_by'] == 'desc':
                     qs = qs.reverse()
             
         serializer = ProductSerializer(qs, many=True)

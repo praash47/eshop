@@ -8,7 +8,7 @@
 						<div class="bread-inner">
 							<ul class="bread-list">
 								<li><router-link to="/">Home<i class="ti-arrow-right"></i></router-link></li>
-								<li class="active"><router-link to="shop-grid">Shop Grid</router-link></li>
+								<li class="active"><router-link to="/shop-grid">Shop Grid</router-link></li>
 							</ul>
 						</div>
 					</div>
@@ -27,26 +27,12 @@
                             <div class="single-widget range">
                                 <h3 class="title">Shop by Price</h3>
                                 <div class="price-filter">
+                                    <p>Add your price range</p>
                                     <div class="price-filter-inner">
-                                        <div id="slider-range"></div>
-                                            <div class="price_slider_amount">
-                                            <div class="label-input">
-                                                <span>Range:</span><input type="text" id="amount" name="price" placeholder="Add Your Price"/>
-                                            </div>
-                                        </div>
+                                        <input type="text" placeholder="Lower Price" style="width: 90px;"> - 
+                                        <input type="text" placeholder="Higher Price" style="width: 90px;">
                                     </div>
                                 </div>
-                                <ul class="check-box-list">
-                                    <li>
-                                        <label class="checkbox-inline" for="1"><input name="news" id="1" type="checkbox">$20 - $50<span class="count">(3)</span></label>
-                                    </li>
-                                    <li>
-                                        <label class="checkbox-inline" for="2"><input name="news" id="2" type="checkbox">$50 - $100<span class="count">(5)</span></label>
-                                    </li>
-                                    <li>
-                                        <label class="checkbox-inline" for="3"><input name="news" id="3" type="checkbox">$100 - $250<span class="count">(8)</span></label>
-                                    </li>
-                                </ul>
                             </div>
                             <!--/ End Shop By Price -->
                             <!-- Single Widget -->
@@ -62,11 +48,15 @@
                             <!-- Single Widget -->
                             <div class="single-widget category">
                                 <h3 class="title">Sub Categories</h3>
-                                <ul class="categor-list" v-if="cats">
-                                    <p style="color: red; opacity: 0.5;">Select a category here to see the list of sub-categories</p>
+                                <ul class="categor-list" v-if="$route.params.catName">
+                                    <span v-for="(values, cat, index) in cats" :key="index">
+                                        <li v-for="subcat in values.subcats" :key="subcat">
+                                        <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()" v-if="cat.toLowerCase() == $route.params.catName">{{ subcat }}</router-link>
+                                        </li>
+                                    </span>
                                 </ul>
                                 <ul class="categor-list" v-else>
-                                    <li><a href="#">Forever</a></li>
+                                    <p style="color: red; opacity: 0.5;">Select a category here to see the list of sub-categories</p>
                                 </ul>
                             </div>
                             <!--/ End Single Widget -->
@@ -91,42 +81,6 @@
                                     </div>
                                 </div>
                                 <!-- End Single Post -->
-                                <!-- Single Post -->
-                                <div class="single-post first">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/75x75" alt="#">
-                                    </div>
-                                    <div class="content">
-                                        <h5><a href="#">Women Clothings</a></h5>
-                                        <p class="price">$99.50</p>
-                                        <ul class="reviews">
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li><i class="ti-star"></i></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- End Single Post -->
-                                <!-- Single Post -->
-                                <div class="single-post first">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/75x75" alt="#">
-                                    </div>
-                                    <div class="content">
-                                        <h5><a href="#">Man Tshirt</a></h5>
-                                        <p class="price">$99.50</p>
-                                        <ul class="reviews">
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- End Single Post -->
                             </div>
                             <!--/ End Single Widget -->
 						</div>
@@ -138,28 +92,34 @@
 								<div class="shop-top">
 									<div class="shop-shorter">
 										<div class="single-shorter">
-											<label>Show :</label>
-											<select style="display: none;">
-												<option selected="selected">09</option>
-												<option>15</option>
-												<option>25</option>
-												<option>30</option>
-											</select><div class="nice-select" tabindex="0"><span class="current">09</span><ul class="list"><li data-value="09" class="option selected">09</li><li data-value="15" class="option">15</li><li data-value="25" class="option">25</li><li data-value="30" class="option">30</li></ul></div>
+											<label>Sort By :</label>
+                                            <div class="nice-select" tabindex="0">
+                                                <span class="current">None</span>
+                                                <ul class="list">
+                                                    <li class="option selected">None</li>
+                                                    <li class="option">Name</li>
+                                                    <li class="option">Price</li>
+                                                </ul>
+                                            </div>
 										</div>
 										<div class="single-shorter">
-											<label>Sort By :</label>
-											<select style="display: none;">
-												<option selected="selected">Name</option>
-												<option>Price</option>
-												<option>Size</option>
-											</select><div class="nice-select" tabindex="0"><span class="current">Name</span><ul class="list"><li data-value="Name" class="option selected">Name</li><li data-value="Price" class="option">Price</li><li data-value="Size" class="option">Size</li></ul></div>
+											<label>Order :</label>
+                                            <div class="nice-select" tabindex="0">
+                                                <span class="current">Ascending</span>
+                                                <ul class="list">
+                                                    <li class="option selected">Ascending</li>
+                                                    <li class="option">Descending</li>
+                                                </ul>
+                                            </div>
 										</div>
 									</div>
 								</div>
 								<!--/ End Shop Top -->
 							</div>
 						</div>
-                        <div v-if="$route.params.catName" class="results">Showing you results of <strong>{{ $route.params.catName }}</strong><router-link class="close" to="/shop-grid">x</router-link></div>
+                        <div v-if="$route.params.catName || $route.query.search" class="results">Showing you results of <strong>{{ $route.params.catName }} <span v-if="$route.params.subCatName"><i class="ti-arrow-right"></i> {{ $route.params.subCatName }}</span></strong>
+                        <span v-if="$route.query.search">search term <strong>'{{ $route.query.search }}'</strong></span>
+                        <span class="close" @click="clear">x</span></div>
                         <div class="product-grid">
                             <SingleProduct class="product-item" v-for="(item, index) in productslist" :key="index" :price="item.price" :name="item.product_name"
                             :img_path="'http://127.0.0.1:8000' + item.img1" />
@@ -173,41 +133,100 @@
 </template>
 <script>
 import SingleProduct from '@/components/SingleProduct.vue'
+import { sendRequest } from './functions'
+
 export default {
-    props: ['productslist', 'cats'],
+    props: ['cats'],
     components: {
         SingleProduct
     },
+    created () {
+        this.filterByCategory()
+        this.fetchProducts()
+        setInterval(this.fetchProducts, 1000)
+    },
     data () {
         return {
-            trendings: [
-                {'id': 0, 'product_name': 'Book', 'price': 6000},
-                {'id': 1, 'product_name': 'Wool', 'price': 6000},
-                {'id': 2, 'product_name': 'Khadkulo', 'price': 10000},
-                {'id': 3, 'product_name': 'Water Bottle', 'price': 145000},
-                {'id': 4, 'product_name': 'Wooden Bed', 'price': 2000},
-                {'id': 5, 'product_name': 'Sofa', 'price': 1500},
-                {'id': 6, 'product_name': 'Cupboard', 'price': 400},
-                {'id': 7, 'product_name': 'Fan', 'price': 600},
-                {'id': 8, 'product_name': 'Clock', 'price': 300},
-            ]
+            needed: "all_products",
+            filtering_by: [],
+            search_term: "",
+            subcategory: [],
+            price_low: 5000,
+            price_high: 80000,
+            sorting: "False",
+            sorted_by: "price",
+            ordered_by: "desc",
+            productslist: ''
         }
     },
     watch: {
         $route() {
-            this.filterProductData()
+            this.filterByCategory()
+            this.filterBySearchTerm()
+            console.log(this.filtering_by)                    
         }
     },
     methods: {
-        filterProductData: function () {
-            // let subcats = ''
-            // for (let cat in this.cats) {
-            //     if(cat.toLowerCase() == this.$route.params.catName) {
-            //         subcats = this.cats[cat]['subcatids']
-            //     }
-            // }
+        fetchProducts: function () {
+            let vm = this
+            let data = {
+                "needed": vm.needed,
+                "filtering_by": vm.filtering_by,
+                "search_term": vm.search_term,
+                "subcategory": vm.subcategory, 
+                "price_low": vm.price_low,
+                "price_high": vm.price_high,
+                "sorting": vm.sorting,
+                "sorted_by": vm.sorted_by,
+                "ordered_by": vm.ordered_by
+            }
+            let r = sendRequest('post', 'http://127.0.0.1:8000/server/products/', data);
+            r.then(function(response) {
+                vm.productslist = response['data']
+            })  
+        },
+        filterByCategory: function () {
+            let vm = this
+            
+            if (vm.$route.params.catName) {
+                vm.needed = "filtered_orand_sorted"
+                vm.filtering_by.push("subcategory")
+                for (let cat in vm.cats) {
+                    if(cat.toLowerCase() == vm.$route.params.catName && !vm.$route.params.subCatName){
+                        vm.subcategory = vm.cats[cat]['subcatids']
+                    }
+                    else if(cat.toLowerCase() == vm.$route.params.catName && vm.$route.params.subCatName){
+                        vm.filterBySubCategory(cat)
+                    }
+                }
+            }
+        },
+        filterBySubCategory: function (cat) {
+            let vm = this
+            let index = -1
+            let subcats = vm.cats[cat]['subcats']
+            for (let subcat in subcats) {
+                index += 1
+                if(subcats[subcat].toLowerCase() == vm.$route.params.subCatName) {
+                    vm.subcategory = []
+                    vm.subcategory.push(vm.cats[cat]['subcatids'][index])
+                }
+            }
+        },
+        filterBySearchTerm: function () {
+            let vm = this
+
+            if (vm.$route.query.search) {
+                vm.needed = "filtered_orand_sorted"
+                vm.filtering_by.push("search_term")
+                vm.searchTerm = vm.$route.query.search
+            }
+        },
+        clear: function () {
+            this.needed = 'all_products'
+            this.$router.push('/shop-grid')
         }
-    }
+    },
 }
 </script>
 <style scoped>

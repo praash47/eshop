@@ -8,7 +8,7 @@
 						<div class="bread-inner">
 							<ul class="bread-list">
 								<li><router-link to="/">Home<i class="ti-arrow-right"></i></router-link></li>
-								<li class="active"><router-link to="cats">Categories</router-link></li>
+								<li class="active"><router-link to="/cats">Categories</router-link></li>
 							</ul>
 						</div>
 					</div>
@@ -25,7 +25,9 @@
                     <span @click="toggleCollapse" v-if="values.subcats.length > 0">▼</span>
                 </div>
                 <div class="collapsible-contents">       
-                    <div class="category" v-for="subcat in values.subcats" :key="subcat">{{ subcat }}</div>
+                    <div class="category" v-for="subcat in values.subcats" :key="subcat">
+                    <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()">    {{ subcat }} </router-link>
+                    </div>
                 </div>
             </div>  
         </div>

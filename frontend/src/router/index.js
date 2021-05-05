@@ -62,6 +62,21 @@ const routes = [
     name: 'Category',
     component: () => import('../views/ShopGrid.vue')
   },
+  {
+    path: '/shop-grid/:catName/:subCatName',
+    name: 'SubCategory',
+    component: () => import('../views/ShopGrid.vue')
+  },
+  {
+    path: '/shop-grid/search',
+    name: 'Search',
+    component: () => import('../views/ShopGrid.vue')
+  },
+  {
+    path: '/shop-grid/search/:searchTerm',
+    name: 'SearchTerm',
+    component: () => import('../views/ShopGrid.vue')
+  },
 ]
 
 const router = createRouter({

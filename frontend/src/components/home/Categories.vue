@@ -10,7 +10,9 @@
           </router-link>
           <ul class="sub-category" v-if="values.subcats.length > 0">
             <li v-for="subcat in values.subcats" :key="subcat">
-              <a href="#">{{ subcat }} </a>
+              <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()">
+                {{ subcat }}
+              </router-link>
             </li>
           </ul>
         </li>

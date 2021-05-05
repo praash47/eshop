@@ -8,7 +8,7 @@
 						<div class="bread-inner">
 							<ul class="bread-list">
 								<li><router-link to="/">Home<i class="ti-arrow-right"></i></router-link></li>
-								<li class="active"><router-link to="orders">Orders</router-link></li>
+								<li class="active"><router-link to="/orders">Orders</router-link></li>
 							</ul>
 						</div>
 					</div>
