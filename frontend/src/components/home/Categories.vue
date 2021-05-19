@@ -2,16 +2,17 @@
   <div class="col-lg-3">
     <div class="all-category">
       <h3 class="cat-heading"><i class="fa fa-bars" aria-hidden="true"></i>CATEGORIES</h3>
-      <ul class="main-category" v-for="(values, cat, index) in catslist" :key="index">
+      <ul class="main-category" v-for="(cat, index) in categories" :key="cat.id">
         <li v-if="index < 10">
-          <router-link :to="'/shop-grid/' + cat.toLowerCase()">
-            {{ cat }} 
-            <i class="fa fa-angle-right" aria-hidden="true" v-if="values.subcats.length > 0"></i>
+          <router-link :to="'/shop-grid/' + cat.cat_name.toLowerCase()">
+            {{ cat.cat_name }}
+            <i class="fa fa-angle-right" aria-hidden="true" v-if="subCatsThere(cat.id)"></i>
           </router-link>
-          <ul class="sub-category" v-if="values.subcats.length > 0">
-            <li v-for="subcat in values.subcats" :key="subcat">
-              <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()">
-                {{ subcat }}
+          <ul class="sub-category" v-if="subCatsThere(cat.id)">
+            <li v-for="subcat in subcategories" :key="subcat.id">
+              <router-link v-if="subcat.category == cat.id"
+              :to="'/shop-grid/' + cat.cat_name.toLowerCase() + '/' + subcat.subcat_name.toLowerCase()">
+                {{ subcat.subcat_name }}
               </router-link>
             </li>
           </ul>
@@ -21,9 +22,11 @@
   </div>
 </template>
 <script>
+import fetch from '../../mixins/fetch'
+
 export default {
   name: 'Categories',
-  props: ['catslist']
+  mixins: [fetch],
 }
 </script>
 <style>

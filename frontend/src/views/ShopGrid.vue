@@ -29,8 +29,8 @@
                                 <div class="price-filter">
                                     <p>Add your price range</p>
                                     <div class="price-filter-inner">
-                                        <input type="text" placeholder="Lower Price" style="width: 90px;"> - 
-                                        <input type="text" placeholder="Higher Price" style="width: 90px;">
+                                        <input type="text" placeholder="Lower Price" style="width: 90px;" v-model="toFilter.price_low"> - 
+                                        <input type="text" placeholder="Higher Price" style="width: 90px;" v-model="toFilter.price_high">
                                     </div>
                                 </div>
                             </div>
@@ -39,19 +39,22 @@
                             <div class="single-widget category">
                                 <h3 class="title">Categories</h3>
                                 <ul class="categor-list">
-                                    <li v-for="(values, cat, index) in cats" :key="index">
-                                        <router-link :to="'/shop-grid/' + cat.toLowerCase()">{{ cat }}</router-link>
+                                    <li v-for="cat in categories" :key="cat.id">
+                                        <router-link :to="'/shop-grid/' + cat.cat_name.toLowerCase()">{{ cat.cat_name }}</router-link>
                                     </li>
                                 </ul>
                             </div>
                             <!--/ End Single Widget -->
                             <!-- Single Widget -->
-                            <div class="single-widget category">
+                            <div class="single-widget cat-egory">
                                 <h3 class="title">Sub Categories</h3>
                                 <ul class="categor-list" v-if="$route.params.catName">
-                                    <span v-for="(values, cat, index) in cats" :key="index">
-                                        <li v-for="subcat in values.subcats" :key="subcat">
-                                        <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()" v-if="cat.toLowerCase() == $route.params.catName">{{ subcat }}</router-link>
+                                    <span v-for="subcategory in subcategories" :key="subcategory.id">
+                                        <li v-if="subcategory.category == curr_cat_id">
+                                            <router-link :to="'/shop-grid/' + $route.params.catName.toLowerCase()
+                                            + '/' + subcategory.subcat_name.toLowerCase()">
+                                                {{ subcategory.subcat_name }}
+                                            </router-link>
                                         </li>
                                     </span>
                                 </ul>
@@ -62,8 +65,7 @@
                             <!--/ End Single Widget -->
                             <!-- Single Widget -->
                             <div class="single-widget recent-post">
-                                <h3 class="title">Recommendations</h3>
-                                <!-- Single Post -->
+                                <h3 class="title">Recommendations</h3>f
                                 <div class="single-post first">
                                     <div class="image">
                                         <img src="https://via.placeholder.com/75x75" alt="#">
@@ -117,12 +119,14 @@
 								<!--/ End Shop Top -->
 							</div>
 						</div>
-                        <div v-if="$route.params.catName || $route.query.search" class="results">Showing you results of <strong>{{ $route.params.catName }} <span v-if="$route.params.subCatName"><i class="ti-arrow-right"></i> {{ $route.params.subCatName }}</span></strong>
+                        <div v-if="$route.params.catName || $route.query.search || toFilter.price_low || toFilter.price_high" class="results">Showing you results of <strong>{{ $route.params.catName }}
+                        <span v-if="$route.params.subCatName"><i class="ti-arrow-right"></i> {{ $route.params.subCatName }} </span></strong>
+                        <span v-if="price_low || price_high">price range: <strong>{{ toFilter.price_low }} - {{ toFilter.price_high }} </strong></span>
                         <span v-if="$route.query.search">search term <strong>'{{ $route.query.search }}'</strong></span>
                         <span class="close" @click="clear">x</span></div>
                         <div class="product-grid">
                             <SingleProduct class="product-item" v-for="(item, index) in productslist" :key="index" :price="item.price" :name="item.product_name"
-                            :img_path="'http://127.0.0.1:8000' + item.img1" />
+                            :img_path="'-http://127.0.0.1:8000' + item.img1" />
                         </div>
 					</div>
 				</div>
@@ -133,98 +137,104 @@
 </template>
 <script>
 import SingleProduct from '@/components/SingleProduct.vue'
-import { sendRequest } from './functions'
+import { sendRequest } from '../views/functions'
+import fetch from '../mixins/fetch'
 
 export default {
-    props: ['cats'],
+    name: 'ShopGrid',
+    mixins: [fetch],   
     components: {
         SingleProduct
     },
     created () {
-        this.filterByCategory()
+        // fetching products
         this.fetchProducts()
-        setInterval(this.fetchProducts, 1000)
     },
     data () {
         return {
-            needed: "all_products",
-            filtering_by: [],
-            search_term: "",
-            subcategory: [],
-            price_low: 5000,
-            price_high: 80000,
-            sorting: "False",
-            sorted_by: "price",
-            ordered_by: "desc",
-            productslist: ''
+            toFilter: {    
+                needed: "all_products",
+                filtering_by: [],
+                search_term: "",
+                subcategory: [],
+                price_low: "",
+                price_high: "",
+                sorting: "",
+                sorted_by: "",
+                ordered_by: "desc",
+            },
+            productslist: '',
+            curr_cat_id : '',
+            curr_subcat_id: ''
         }
     },
     watch: {
-        $route() {
+        $route () {
+            this.fetchCategories()
             this.filterByCategory()
-            this.filterBySearchTerm()
-            console.log(this.filtering_by)                    
+            this.fetchProducts()
         }
     },
     methods: {
-        fetchProducts: function () {
-            let vm = this
-            let data = {
-                "needed": vm.needed,
-                "filtering_by": vm.filtering_by,
-                "search_term": vm.search_term,
-                "subcategory": vm.subcategory, 
-                "price_low": vm.price_low,
-                "price_high": vm.price_high,
-                "sorting": vm.sorting,
-                "sorted_by": vm.sorted_by,
-                "ordered_by": vm.ordered_by
-            }
-            let r = sendRequest('post', 'http://127.0.0.1:8000/server/products/', data);
-            r.then(function(response) {
-                vm.productslist = response['data']
-            })  
-        },
+        // Filtering
         filterByCategory: function () {
             let vm = this
-            
-            if (vm.$route.params.catName) {
-                vm.needed = "filtered_orand_sorted"
-                vm.filtering_by.push("subcategory")
-                for (let cat in vm.cats) {
-                    if(cat.toLowerCase() == vm.$route.params.catName && !vm.$route.params.subCatName){
-                        vm.subcategory = vm.cats[cat]['subcatids']
-                    }
-                    else if(cat.toLowerCase() == vm.$route.params.catName && vm.$route.params.subCatName){
-                        vm.filterBySubCategory(cat)
-                    }
-                }
-            }
-        },
-        filterBySubCategory: function (cat) {
-            let vm = this
-            let index = -1
-            let subcats = vm.cats[cat]['subcats']
-            for (let subcat in subcats) {
-                index += 1
-                if(subcats[subcat].toLowerCase() == vm.$route.params.subCatName) {
-                    vm.subcategory = []
-                    vm.subcategory.push(vm.cats[cat]['subcatids'][index])
-                }
-            }
-        },
-        filterBySearchTerm: function () {
-            let vm = this
+            console.log("filtering by ")
 
-            if (vm.$route.query.search) {
-                vm.needed = "filtered_orand_sorted"
-                vm.filtering_by.push("search_term")
-                vm.searchTerm = vm.$route.query.search
+            // If category is selected
+            if (vm.curr_cat_id) {
+                console.log("category ")
+                const filter = vm.toFilter
+                filter.needed = "filtered_orand_sorted"
+
+                // If it is not already filtering by subcategory, then add subcategory to filtering by
+                if (!filter.filtering_by.includes("subcategory")) {
+                    filter.filtering_by.push("subcategory")
+                }
+
+                // If subcategory is selected
+                if (vm.curr_subcat_id) {
+                    filter.subcategory = []  // empty it
+                    filter.subcategory.push(vm.curr_subcat_id)
+                }
+
+                // If only category
+                else {
+                    console.log("only c")
+                    let catPresent = (filter.subcategory.length == 0 ) ?
+                                        false :
+                                        filter.subcategory.every(vm.checkSubCatPresent)
+                    console.log(catPresent)
+                    if (!catPresent) {
+                        filter.subcategory = []
+                        filter.subcategory = vm.getSubcatIdsByCatId()
+                    }
+                }
+            }
+
+            // If no category or sub-category selected
+            else {
+                vm.needed = "all_products" 
             }
         },
-        clear: function () {
-            this.needed = 'all_products'
-            this.$router.push('/shop-grid')
+        checkSubCatPresent: function (id) {
+            let subcatids = this.getSubcatIdsByCatId()
+            return subcatids.includes(id)
+        },
+
+        // Fetch Products
+        fetchProducts: async function () {
+            let products = await sendRequest('http://127.0.0.1:8000/server/products/', this.toFilter)
+            this.productslist = products.data
+        },
+
+        getSubcatIdsByCatId: function () {
+            let subcategoryids = [], vm = this
+            for (const subcategoryIndex in vm.subcategories) {
+                if (vm.subcategories[subcategoryIndex]['category'] == vm.curr_cat_id)
+                    subcategoryids.push(vm.subcategories[subcategoryIndex]['id'])
+            }
+            return subcategoryids
         }
     },
 }

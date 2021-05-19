@@ -1,11 +1,13 @@
 import axios from 'axios'
 
-export function sendRequest(method, url, data) {
-    return axios({
-        method,
-        url,
-        xsrfCookieName: 'csrftoken',
-        xsrfHeaderName: 'X-CSRFToken',
-        data
-    });
+export async function sendRequest(url, data) {
+    try {
+        const response = await axios.post(
+            url,
+            data
+        )
+        return response
+    } catch (error) {
+        console.error(error);
+    }
 }

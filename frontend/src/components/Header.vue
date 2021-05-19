@@ -181,10 +181,10 @@ export default {
   },
   methods: {
       sendToShopGrid () {
-          this.$router.push({
-              path: '/shop-grid',
-              query: {search: this.search} 
-          })
+        //   this.$router.push({
+        //       path: '/shop-grid',
+        //       query: {search: this.search} 
+        //   })
       }
   }
 }

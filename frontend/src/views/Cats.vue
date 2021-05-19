@@ -18,15 +18,18 @@
 		<!-- End Breadcrumbs -->
         <h1>Categories</h1>
         <div class="all-categories">   
-            <div class="collapsible" v-for="(values, cat, index) in cats" :key="index">
+            <div class="collapsible" v-for="cat in categories" :key="cat.id">
                 <div class="imgBx">
-                    <h2><router-link :to="'/shop-grid/' + cat.toLowerCase()">{{ cat }}</router-link></h2>
-                    <img :src="'http://127.0.0.1:8000' + values.image">
-                    <span @click="toggleCollapse" v-if="values.subcats.length > 0">▼</span>
+                    <h2><router-link :to="'/shop-grid/' + cat.cat_name.toLowerCase()">{{ cat.cat_name }}</router-link></h2>
+                    <img :src="'http://127.0.0.1:8000' + cat.cat_img">
+                    <span @click="toggleCollapse" v-if="subCatsThere(cat.id)">▼</span>
                 </div>
                 <div class="collapsible-contents">       
-                    <div class="category" v-for="subcat in values.subcats" :key="subcat">
-                    <router-link :to="'/shop-grid/' + cat.toLowerCase() + '/' + subcat.toLowerCase()">    {{ subcat }} </router-link>
+                    <div class="category" v-for="subcat in subcategories" :key="subcat.id">
+                    <router-link v-if="subcat.category == cat.id"
+                    :to="'/shop-grid/' + cat.cat_name.toLowerCase() + '/' + subcat.subcat_name.toLowerCase()">
+                        {{ subcat.subcat_name }} 
+                    </router-link>
                     </div>
                 </div>
             </div>  
@@ -34,15 +37,17 @@
     </div>
 </template>
 <script>
+import fetch from '../mixins/fetch'
+
 export default {
-    props: ['cats'],
+    mixins: [fetch],
     methods: {
         toggleCollapse: function (event) {
            let arrow = event.target
            arrow.classList.toggle("active")
            let collapsingContent = arrow.parentNode.nextSibling
            collapsingContent.classList.toggle("active")
-        }
+        },
     }
 }
 </script>

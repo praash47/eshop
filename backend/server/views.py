@@ -73,6 +73,9 @@ class ProductView(APIView):
     def post(self, request, *args, **kwargs):
         qs = Product.objects.all()
 
+        
+
+        print(request.data)
         if request.data['needed'] == 'filtered_orand_sorted':
             for filtering_with in request.data['filtering_by']:
                 if filtering_with == "subcategory":
