@@ -22,6 +22,7 @@ export default {
           this.curr_cat_id = this.getId()   
           this.curr_subcat_id = this.getId('subcategory')
           this.filterByCategory()  // filter by category definition in ShopGrid.vue
+          this.filterByPrice()
           this.fetchProducts()
         }
     },

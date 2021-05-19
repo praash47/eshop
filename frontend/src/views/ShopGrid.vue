@@ -29,8 +29,8 @@
                                 <div class="price-filter">
                                     <p>Add your price range</p>
                                     <div class="price-filter-inner">
-                                        <input type="text" placeholder="Lower Price" style="width: 90px;" v-model="toFilter.price_low"> - 
-                                        <input type="text" placeholder="Higher Price" style="width: 90px;" v-model="toFilter.price_high">
+                                        <input type="number" placeholder="Lower Price" style="width: 90px;" v-model="toFilter.price_low"> - 
+                                        <input type="number" placeholder="Higher Price" style="width: 90px;" v-model="toFilter.price_high">
                                     </div>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                             <!--/ End Single Widget -->
                             <!-- Single Widget -->
                             <div class="single-widget recent-post">
-                                <h3 class="title">Recommendations</h3>f
+                                <h3 class="title">Recommendations</h3>
                                 <div class="single-post first">
                                     <div class="image">
                                         <img src="https://via.placeholder.com/75x75" alt="#">
@@ -95,37 +95,51 @@
 									<div class="shop-shorter">
 										<div class="single-shorter">
 											<label>Sort By :</label>
-                                            <div class="nice-select" tabindex="0">
-                                                <span class="current">None</span>
-                                                <ul class="list">
-                                                    <li class="option selected">None</li>
-                                                    <li class="option">Name</li>
-                                                    <li class="option">Price</li>
-                                                </ul>
-                                            </div>
+                                            <select v-model="toFilter.sorted_by">
+                                                <option selected="selected" value="">none</option>
+                                                <option>name</option>
+                                                <option>price</option>
+                                            </select>
 										</div>
 										<div class="single-shorter">
 											<label>Order :</label>
-                                            <div class="nice-select" tabindex="0">
-                                                <span class="current">Ascending</span>
-                                                <ul class="list">
-                                                    <li class="option selected">Ascending</li>
-                                                    <li class="option">Descending</li>
-                                                </ul>
-                                            </div>
+                                            <select v-model="toFilter.ordered_by">
+                                                <option selected="selected" value="">asc</option>
+                                                <option>desc</option>
+                                            </select>
 										</div>
 									</div>
 								</div>
 								<!--/ End Shop Top -->
 							</div>
 						</div>
-                        <div v-if="$route.params.catName || $route.query.search || toFilter.price_low || toFilter.price_high" class="results">Showing you results of <strong>{{ $route.params.catName }}
-                        <span v-if="$route.params.subCatName"><i class="ti-arrow-right"></i> {{ $route.params.subCatName }} </span></strong>
-                        <span v-if="price_low || price_high">price range: <strong>{{ toFilter.price_low }} - {{ toFilter.price_high }} </strong></span>
-                        <span v-if="$route.query.search">search term <strong>'{{ $route.query.search }}'</strong></span>
-                        <span class="close" @click="clear">x</span></div>
+                        <!-- If Catname or search_query or price low or high set, then -->
+                        <div v-if="$route.params.catName || $route.query.search || toFilter.price_low || toFilter.price_high" class="results">
+                            Showing you results of
+                            <!-- categories and sub-categories -->
+                            <strong v-if="$route.params.catName">
+                                {{ $route.params.catName }}
+                                <span v-if="$route.params.subCatName"><i class="ti-arrow-right"></i>
+                                    {{ $route.params.subCatName }}
+                                </span>
+                            </strong>
+                            <!-- price range -->
+                            <span v-if="toFilter.price_low || toFilter.price_high">
+                                price range: 
+                                <strong>
+                                    {{ toFilter.price_low }} - {{ toFilter.price_high }} 
+                                </strong>
+                            </span>
+                            <!-- search term -->
+                            <span v-if="$route.query.search">
+                                search term: 
+                                <strong>'{{ $route.query.search }}'</strong>
+                            </span>
+                            <!-- close -->
+                            <span class="close" @click="clear">x</span>
+                        </div>
                         <div class="product-grid">
-                            <SingleProduct class="product-item" v-for="(item, index) in productslist" :key="index" :price="item.price" :name="item.product_name"
+                            <SingleProduct class="product-item" v-for="item in productslist" :key="item.id" :price="item.price" :name="item.product_name"
                             :img_path="'http://127.0.0.1:8000' + item.img1" />
                         </div>
 					</div>
@@ -159,15 +173,43 @@ export default {
                 price_high: "",
                 sorting: "",
                 sorted_by: "",
-                ordered_by: "desc",
+                ordered_by: "",
             },
             productslist: '',
             curr_cat_id : '',
             curr_subcat_id: ''
         }
     },
-    watch: {
+    computed: {
+        price_low () {
+            return this.toFilter.price_low
+        },
+        price_high () {
+            return this.toFilter.price_high
+        },
+        sorted_by () {
+            return this.toFilter.sorted_by
+        },
+        ordered_by () {
+            return this.toFilter.ordered_by
+        }
+    },
+    watch: {    
         $route () {
+            this.fetchCategories()
+        },
+        price_low () {
+            this.fetchCategories()
+        },
+        price_high () {
+            this.fetchCategories()
+        },
+        sorted_by () {
+            this.sort()
+            this.fetchCategories()
+        },
+        ordered_by () {
+            this.sort()
             this.fetchCategories()
         }
     },
@@ -194,21 +236,14 @@ export default {
 
                 // If only category
                 else {
-                    console.log("only c")
                     let catPresent = (filter.subcategory.length == 0 ) ?
                                         false :
                                         filter.subcategory.every(vm.checkSubCatPresent)
-                    console.log(catPresent)
                     if (!catPresent) {
                         filter.subcategory = []
                         filter.subcategory = vm.getSubcatIdsByCatId()
                     }
                 }
-            }
-
-            // If no category or sub-category selected
-            else {
-                vm.needed = "all_products" 
             }
         },
         checkSubCatPresent: function (id) {
@@ -223,12 +258,71 @@ export default {
             }
             return subcategoryids
         },
+        // by price
+        filterByPrice () {
+            let vm = this
+            let filter = vm.toFilter
+            // If filtering prices are set
+            if (filter.price_low || filter.price_high) {
+                filter.needed = "filtered_orand_sorted"
+                if (filter.price_low && !filter.filtering_by.includes("price_low"))
+                    filter.filtering_by.push("price_low")
+                if (filter.price_high && !filter.filtering_by.includes("price_high")) 
+                    filter.filtering_by.push("price_high")
+                if (!filter.price_low && filter.filtering_by.includes("price_low")){
+                    // remove price_low
+                    const pl_index = filter.filtering_by.indexOf("price_low")
+                    filter.filtering_by.splice(pl_index, 1)
+                }
+                if (!filter.price_high && filter.filtering_by.includes("price_high")){
+                    // remove price_high
+                    const ph_index = filter.filtering_by.indexOf("price_high")
+                    filter.filtering_by.splice(ph_index, 1)
+                }
+            }
+            else {
+                if(filter.filtering_by.includes("price_low")) {
+                    // remove price_low
+                    const pl_index = filter.filtering_by.indexOf("price_low")
+                    filter.filtering_by.splice(pl_index, 1)
+                }
+                if(filter.filtering_by.includes("price_high")) {
+                    // remove price_high
+                    const ph_index = filter.filtering_by.indexOf("price_high")
+                    filter.filtering_by.splice(ph_index, 1)
+                }
+            }
+        },
+
+        // SORTING
+        sort: function () {
+            let filter = this.toFilter
+
+            // If user has selected to sort
+            if(filter.sorted_by) {
+                filter.needed = "filtered_orand_sorted"
+                filter.sorting = 'True'
+            } else {  // otherwise, reset the sorting
+                filter.sorting = ''
+            }
+        },
 
         // Fetch Products
         fetchProducts: async function () {
             let products = await sendRequest('http://127.0.0.1:8000/server/products/', this.toFilter)
             this.productslist = products.data
         },
+
+        // Clear
+        clear: function () {
+            let filter = this.toFilter
+            filter.needed = "all_products"
+            filter.filtering_by = []
+            filter.subcategory = []
+            filter.price_low = ''
+            filter.price_high = ''
+            this.$router.push('/shop-grid')
+        }
     },
 }
 </script>
