@@ -45,8 +45,8 @@
                         <!-- Search Form -->
                         <div class="search-top">
                             <form class="search-form">
-                                <input type="text" placeholder="Search here..." v-model="search">
-                                <a @click="sendToShopGrid"><i class="ti-search"></i></a>
+                                <input type="text" placeholder="Search here..." id="searchmobile"
+                                    v-model="search">
                             </form>
                         </div>
                         <!--/ End Search Form -->
@@ -57,8 +57,7 @@
                 <div class="col-lg-8 col-md-7 col-12">
                     <div class="search-bar-top">
                         <div class="search-bar">
-                            <input name="search" placeholder="Search here..." type="search" v-model="search">
-                            <a @click="sendToShopGrid"><i class="ti-search"></i></a>
+                            <input name="search" id="search" placeholder="Search here..." type="search" v-model="search">
                         </div>
                     </div>
                 </div>
@@ -179,12 +178,18 @@ export default {
           search: ''
       }
   },
-  methods: {
-      sendToShopGrid () {
-        //   this.$router.push({
-        //       path: '/shop-grid',
-        //       query: {search: this.search} 
-        //   })
+  watch: {
+      search () {
+          let path = this.$router.currentRoute.value.fullPath
+          let searchQuery = "?search=" + this.search
+          if (path.search('/shop-grid') == -1) {
+              if(this.search) {
+                this.$router.push('/shop-grid' + searchQuery)
+              }
+          }
+          else {
+              this.$router.push(searchQuery)
+          }
       }
   }
 }

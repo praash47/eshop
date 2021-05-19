@@ -196,6 +196,7 @@ export default {
     },
     watch: {    
         $route () {
+            this.search()
             this.fetchCategories()
         },
         price_low () {
@@ -306,6 +307,26 @@ export default {
                 filter.sorting = ''
             }
         },
+        
+        // SEARCHING
+        search: function() {
+            let vm = this
+            vm.toFilter.search_term = vm.$route.query.search
+            let filter = vm.toFilter
+            if (!filter.filtering_by.includes("search_term") && filter.search_term) {
+                filter.needed = "filtered_orand_sorted"
+                filter.filtering_by.push("search_term")
+            } else if (!filter.search_term && filter.filtering_by.includes("search_term")) {
+                // remove search_term from filtering by
+                const s_index = filter.filtering_by.indexOf("search_term")
+                filter.filtering_by.splice(s_index, 1)
+
+                // remove ?search= from the url
+                let current_route = vm.$router.currentRoute.value.fullPath
+                current_route = current_route.replace("?search=", "")
+                vm.$router.push(current_route)
+            }
+        },
 
         // Fetch Products
         fetchProducts: async function () {
@@ -321,6 +342,14 @@ export default {
             filter.subcategory = []
             filter.price_low = ''
             filter.price_high = ''
+            filter.search_term = ''
+
+            // clear the search box.
+            let search = document.getElementById('search')
+            let searchmobile = document.getElementById('searchmobile')
+            search.value = ""
+            searchmobile.value = ""
+            
             this.$router.push('/shop-grid')
         }
     },

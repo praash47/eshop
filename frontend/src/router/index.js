@@ -68,13 +68,8 @@ const routes = [
     component: () => import('../views/ShopGrid.vue')
   },
   {
-    path: '/shop-grid/search',
+    path: '/shop-grid/:search',
     name: 'Search',
-    component: () => import('../views/ShopGrid.vue')
-  },
-  {
-    path: '/shop-grid/search/:searchTerm',
-    name: 'SearchTerm',
     component: () => import('../views/ShopGrid.vue')
   },
 ]

@@ -13,6 +13,7 @@ export default {
   methods: {
     // FETCH CATEGORIES AND SUBCATEGORIES
     fetchCategories: async function () {
+        this.search_term = this.$route.query.search
         let categories = await sendRequest('http://127.0.0.1:8000/server/categories/')
         let subcategories = await sendRequest('http://127.0.0.1:8000/server/subcategories/')
         this.categories = categories.data
@@ -23,6 +24,7 @@ export default {
           this.curr_subcat_id = this.getId('subcategory')
           this.filterByCategory()  // filter by category definition in ShopGrid.vue
           this.filterByPrice()
+          this.search()
           this.fetchProducts()
         }
     },
