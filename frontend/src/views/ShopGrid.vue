@@ -126,7 +126,7 @@
                         <span class="close" @click="clear">x</span></div>
                         <div class="product-grid">
                             <SingleProduct class="product-item" v-for="(item, index) in productslist" :key="index" :price="item.price" :name="item.product_name"
-                            :img_path="'-http://127.0.0.1:8000' + item.img1" />
+                            :img_path="'http://127.0.0.1:8000' + item.img1" />
                         </div>
 					</div>
 				</div>
@@ -147,8 +147,6 @@ export default {
         SingleProduct
     },
     created () {
-        // fetching products
-        this.fetchProducts()
     },
     data () {
         return {
@@ -171,19 +169,15 @@ export default {
     watch: {
         $route () {
             this.fetchCategories()
-            this.filterByCategory()
-            this.fetchProducts()
         }
     },
     methods: {
         // Filtering
         filterByCategory: function () {
             let vm = this
-            console.log("filtering by ")
 
             // If category is selected
             if (vm.curr_cat_id) {
-                console.log("category ")
                 const filter = vm.toFilter
                 filter.needed = "filtered_orand_sorted"
 
@@ -221,13 +215,6 @@ export default {
             let subcatids = this.getSubcatIdsByCatId()
             return subcatids.includes(id)
         },
-
-        // Fetch Products
-        fetchProducts: async function () {
-            let products = await sendRequest('http://127.0.0.1:8000/server/products/', this.toFilter)
-            this.productslist = products.data
-        },
-
         getSubcatIdsByCatId: function () {
             let subcategoryids = [], vm = this
             for (const subcategoryIndex in vm.subcategories) {
@@ -235,7 +222,13 @@ export default {
                     subcategoryids.push(vm.subcategories[subcategoryIndex]['id'])
             }
             return subcategoryids
-        }
+        },
+
+        // Fetch Products
+        fetchProducts: async function () {
+            let products = await sendRequest('http://127.0.0.1:8000/server/products/', this.toFilter)
+            this.productslist = products.data
+        },
     },
 }
 </script>
