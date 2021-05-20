@@ -32,3 +32,9 @@ python manage.py runsever
 ```
 npm run serve
 ```
+
+## syncing backend for making changes to database
+```
+python manage.py makemigrations
+python manage.py migrate
+```

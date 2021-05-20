@@ -237,6 +237,10 @@ export default {
 
                 // If only category
                 else {
+                    // If subcategory array empty, cat not present.
+                    // else for every subcategory check that all of
+                    // the subcategory of current subcategory is present
+                    // in the filtering array.
                     let catPresent = (filter.subcategory.length == 0 ) ?
                                         false :
                                         filter.subcategory.every(vm.checkSubCatPresent)
@@ -248,10 +252,16 @@ export default {
             }
         },
         checkSubCatPresent: function (id) {
+            // checks if current subcat (id) is included in present
+            // category id.
             let subcatids = this.getSubcatIdsByCatId()
             return subcatids.includes(id)
         },
         getSubcatIdsByCatId: function () {
+            /*
+            This function takes in current cat id from vue instance, and
+            picks out ids of the current category.
+            */
             let subcategoryids = [], vm = this
             for (const subcategoryIndex in vm.subcategories) {
                 if (vm.subcategories[subcategoryIndex]['category'] == vm.curr_cat_id)
@@ -266,8 +276,10 @@ export default {
             // If filtering prices are set
             if (filter.price_low || filter.price_high) {
                 filter.needed = "filtered_orand_sorted"
+                // price low set
                 if (filter.price_low && !filter.filtering_by.includes("price_low"))
                     filter.filtering_by.push("price_low")
+                // price high set
                 if (filter.price_high && !filter.filtering_by.includes("price_high")) 
                     filter.filtering_by.push("price_high")
                 if (!filter.price_low && filter.filtering_by.includes("price_low")){
@@ -313,10 +325,10 @@ export default {
             let vm = this
             vm.toFilter.search_term = vm.$route.query.search
             let filter = vm.toFilter
-            if (!filter.filtering_by.includes("search_term") && filter.search_term) {
+            if (!filter.filtering_by.includes("search_term") && filter.search_term) { // search term
                 filter.needed = "filtered_orand_sorted"
                 filter.filtering_by.push("search_term")
-            } else if (!filter.search_term && filter.filtering_by.includes("search_term")) {
+            } else if (!filter.search_term && filter.filtering_by.includes("search_term")) { // no search term
                 // remove search_term from filtering by
                 const s_index = filter.filtering_by.indexOf("search_term")
                 filter.filtering_by.splice(s_index, 1)
@@ -337,6 +349,7 @@ export default {
         // Clear
         clear: function () {
             let filter = this.toFilter
+            // empty al the filters
             filter.needed = "all_products"
             filter.filtering_by = []
             filter.subcategory = []

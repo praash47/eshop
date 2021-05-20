@@ -1,11 +1,12 @@
-from django.http import JsonResponse
-from django.views.generic import ListView
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ContactResponseSerializer, ProductSerializer, CategorySerializer, SubCategorySerializer
-from .models import ContactResponse, Product, Category, SubCategory
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+
+from .serializers import ContactResponseSerializer, ProductSerializer, \
+    CategorySerializer, SubCategorySerializer, CustomerSerializer
+from .models import ContactResponse, Product, Category, SubCategory, Customer
 
 class ContactView(APIView):
     model = ContactResponse
@@ -73,8 +74,6 @@ class ProductView(APIView):
     def post(self, request, *args, **kwargs):
         qs = Product.objects.all()
 
-        
-
         print(request.data)
         if request.data['needed'] == 'filtered_orand_sorted':
             for filtering_with in request.data['filtering_by']:
@@ -99,3 +98,85 @@ class ProductView(APIView):
         serializer = ProductSerializer(qs, many=True)
             
         return Response(serializer.data)
+
+class CustomerView(APIView):
+    model = Customer
+
+    def get(self, request, *args, **kwargs):
+        qs = Customer.objects.all()
+
+        serializer = CustomerSerializer(qs, many=True)
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = data['user']
+
+        if data['purpose'] == 'username_check':
+            user_object = User.objects.filter(username=user['username'])
+
+            # If user exists, send its instance, else nothing
+            if user_object:
+                return Response({"exists": "true"})
+            else:
+                return Response({})
+
+        elif data['purpose'] == "signup":
+            user_object = User.objects.create(
+                username=user['username'], password=user['password'],
+                email=user['email']
+            )
+            user_object.save()
+            customer_object = Customer.objects.create(
+                user=user_object, address=user['address'],
+                city=user['city'], state=user['state'],
+                zip=user['zip']
+            )
+            customer_object.save()
+            return Response({"success": "true"})
+
+        elif data['purpose'] == "login":
+            user_object = authenticate(request, username=user['username'], password=user['password'])
+            
+            if not user_object:
+                return Response({"logged_in": "invalid login"})
+            else:
+                login(request, user_object)
+                return Response({"logged_in": "yes", "username": request.user})
+
+        elif data['purpose'] == "logout":
+            logout(request)
+            return Response({"logout": "success"})
+
+        elif data['purpose'] == "all_details":
+            user_object = User.objects.filter(username=user["username"])[0]
+            customer = Customer.objects.filter(user=user_object.id)[0]
+
+            return Response({
+                "email": user_object.email,
+                "address": customer.address,
+                "city": customer.city,
+                "state": customer.state,
+                "zip": customer.zip
+            })
+
+        elif data['purpose'] == "update":
+            # Split from + into old and new username.
+            old_username = user['username'].split('+')[0]
+            user['username'] = user['username'].split('+')[1]
+            user_object = User.objects.get(username=old_username)
+            customer = Customer.objects.get(user=user_object.id)
+
+            if user['password']:  # user wants to change password
+                user_object.set_password(user['password'])
+            user_object.username = user['username']
+            user_object.email = user['email']
+            user_object.save()
+            
+            customer.address = user['address']
+            customer.city = user['city']
+            customer.state = user['state']
+            customer.zip = user['zip']
+            customer.save()
+            return Response({"update": "success"})

@@ -120,7 +120,7 @@ export default {
     }
   },
   methods: {
-    submitContactResponse () {
+    async submitContactResponse () {
 			var vm = this;
             // Send a POST request
             var data = {
@@ -129,25 +129,17 @@ export default {
                 'message': vm.message,
                 'phone': vm.phone
             };
-            var r = sendRequest("post", 'http://127.0.0.1:8000/server/contact/', data)
-            r.then(function(response) {
-                console.log(response)
-                if (response['status'] == 200) {
-                    vm.messageToDisp = "Message successfully sent!"
-                    vm.messageShow = true
-                    vm.messageClass = 'alert-success'
-                }
-                else {
-                    vm.messageToDisp = response['statusText']
-                    vm.messageShow = true
-                    vm.messageClass = 'alert-danger'
-                }
-            })
-            r.catch(function (error) {
-                vm.messageToDisp = error['message']
+            var response = await sendRequest('http://127.0.0.1:8000/server/contact/', data)
+            if (response.status == 200) {
+                vm.messageToDisp = "Message successfully sent!"
+                vm.messageShow = true
+                vm.messageClass = 'alert-success'
+            }
+            else {
+                vm.messageToDisp = response['statusText']
                 vm.messageShow = true
                 vm.messageClass = 'alert-danger'
-            });
+            }
       vm.clearFormData()
     },
     clearFormData () {

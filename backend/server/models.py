@@ -1,5 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 
+
+class ContactResponse(models.Model):
+	name = models.CharField(max_length=200)
+	email = models.EmailField(max_length=50)
+	phone = models.CharField(max_length=100)
+	message = models.TextField()
+
+	def __str__(self):
+		return self.name
 
 class Category(models.Model):
 	cat_name = models.CharField(max_length=50)
@@ -33,13 +43,12 @@ class Product(models.Model):
 	def __str__(self):
 		return str(self.sub_category) + ' - ' + self.product_name
 
-class ContactResponse(models.Model):
-	name = models.CharField(max_length=200)
-	email = models.EmailField(max_length=50)
-	phone = models.CharField(max_length=100)
-	message = models.TextField()
+class Customer(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	address = models.CharField(max_length=200)
+	city = models.CharField(max_length=50)
+	state = models.CharField(max_length=10)
+	zip = models.IntegerField()
 
 	def __str__(self):
-		return self.name
-
-		
+		return str(self.user)
