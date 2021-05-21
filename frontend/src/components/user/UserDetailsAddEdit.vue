@@ -6,7 +6,7 @@
             <div class="form-group col-md-6">
             <label for="inputEmail4">Email</label>
             <input type="email" v-model="user.email"
-            class="form-control" id="inputEmail4" placeholder="Email" required="required">
+            class="form-control" placeholder="Email" required="required">
             <span :class="error.email_valid[1]" v-if="error.email_valid[0]">
                 <!-- 0 - status text & 1 - bootstrap class -->
                 {{ error.email_valid[0] }}
@@ -15,7 +15,7 @@
             <div class="form-group col-md-6">
             <label for="inputPassword4">Password</label>
             <input type="password" v-model="user.password"
-            class="form-control" id="inputPassword4" placeholder="Password" required="required"
+            class="form-control" placeholder="Password" required="required"
             minlength="8" maxlength="16">
             <span :class="error.password_valid[1]" v-if="error.password_valid[0]">
                 <!-- 0 - status text & 1 - bootstrap class -->
@@ -25,8 +25,8 @@
         </div>
         <div class="form-group">
             <label for="inputAddress2">Username</label>
-            <input type="text" class="form-control" id="inputAddress2" placeholder="Username"
-            v-model="user.username" required="required" minlength="2">
+            <input type="text" class="form-control" placeholder="Username"
+            v-model="user.username" required="required" minlength="2" name="username-su">
             <span :class="error.username_exists[1]" v-if="error.username_exists[0]">
                 <!-- 0 - status text & 1 - bootstrap class -->
                 {{ error.username_exists[0] }}
@@ -35,18 +35,18 @@
         <div class="form-group">
             <label for="inputAddress">Address (at least 10 characters)</label>
             <input type="text" v-model="user.address" required="required" 
-             class="form-control" id="inputAddress" placeholder="Eg.: Tichhu Galli Street, Haugal-19"
+             class="form-control" placeholder="Eg.: Tichhu Galli Street, Haugal-19"
              minlength="10">
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
             <label for="inputCity">City (at least 3 characters)</label>
             <input type="text" required="required" placeholder="City"
-            v-model="user.city" class="form-control" id="inputCity" minlength="3">
+            v-model="user.city" class="form-control" minlength="3">
             </div>
             <div class="form-group col-md-4">
             <label for="inputState">State</label>
-            <select id="inputState" class="form-control" required="required" 
+            <select class="form-control" required="required" 
             v-model="user.state">
                 <option selected disabled value="">Choose...</option>
                 <option>Bagmati</option>
@@ -61,7 +61,7 @@
             <div class="form-group col-md-2">
             <label for="inputZip">Zip</label>
             <input type="number" class="form-control" required="required" 
-            id="inputZip" v-model="user.zip" placeholder="Zip" minlength="5"
+            v-model="user.zip" placeholder="Zip" minlength="5"
             min="10000" max="99999">
             <span :class="error.zip_valid[1]" v-if="error.zip_valid[0]">
                 <!-- 0 - status text & 1 - bootstrap class -->
@@ -78,7 +78,7 @@
     </div>
 </template>
 <script>
-import { sendRequest } from '../../views/functions'
+import { sendRequest, createCookie } from '../../views/functions'
 
 export default {
   name: 'UserDetailsAddEdit',
@@ -93,7 +93,7 @@ export default {
             address: "",
             city: "",
             state: "",
-            zip: ""
+            zip: "",
           },
           error: {
             username_exists: ["", ""],  //  status text, bootstrap class
@@ -101,7 +101,12 @@ export default {
             password_valid: ["", ""],
             zip_valid: ["", ""],
             general: [false, "Please correct errors to continue"]  // there or not, text
-          }
+          },
+      }
+  },
+  mounted () {
+      if (this.type == "Update") {  
+        this.fetchDetails()
       }
   },
   computed: {
@@ -140,6 +145,11 @@ export default {
           }
           let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
           let exists = req.data.exists || this.user.username.length < 2 ? "true" : ""
+
+          if (this.type == "Update") {
+            exists = (req.data.user == localStorage.getItem("old_username")) ? "" : exists
+          }
+    
           let status_message = [
             // 0, 1 - error_message, success_message  
               "",
@@ -196,15 +206,17 @@ export default {
 
       // Towards Backend!
       async sendDetails () {
-        let error_count = document.getElementsByClassName('text-danger').length - 1
-
+        let error_count = document.querySelectorAll('.text-danger').length
         // Filter out other text-danger elements.
-        if(document.getElementsByClassName('text-danger').length > 1){
-            for (let i=0; i<document.getElementsByClassName('text-danger').length; i++) {
-                if(document.getElementsByClassName('text-danger')[i].textContent == this.error.general[1]) {
+        if(document.querySelectorAll('.text-danger').length > 1){
+            for (let i=0; i<document.querySelectorAll('.text-danger').length; i++) {
+                if(document.querySelectorAll('.text-danger')[i].textContent == this.error.general[1]) {
                     error_count -= 1
                 }
-                else if(document.getElementsByClassName('text-danger')[i].textContent == "Invalid login") {
+                else if(document.querySelectorAll('.text-danger')[i].textContent == "Invalid login") {
+                    error_count -= 1
+                }
+                else if(document.querySelectorAll('.text-danger')[i].textContent == "* - all fields required") {
                     error_count -= 1
                 }
             }
@@ -213,33 +225,87 @@ export default {
         if (error_count < 1) {
           this.error.general[0] = false
 
+          let username
+          if(this.type == "Update") {  
+             username = localStorage.getItem("old_username") + '+' + this.user.username
+          }
+
           let data = {
-            purpose: "signup",
-            user: this.user
+            purpose: this.type.toLowerCase(),
+            user: {
+                username: this.type == "Update" ? username : this.user.username,
+                email: this.user.email,
+                address: this.user.address,
+                state: this.user.state,
+                city: this.user.city,
+                zip: this.user.zip,
+                password: this.user.password
+            }
           }
 
           let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
           let success = req.data.success
+          let user = req.data.user
           if (success == "true") {
-            this.user.username = ""
             this.user.password = ""
-            this.user.email = ""
-            this.user.address = ""
-            this.user.city = ""
-            this.user.state = ""
-            this.user.zip = ""
+            if (this.type.toLowerCase() == "signup") {    
+                this.user.username = ""
+                this.user.email = ""
+                this.user.address = ""
+                this.user.city = ""
+                this.user.state = ""
+                this.user.zip = ""
+            } else {   
+                this.user.username = user.username
+                this.user.email = user.email
+                this.user.address = user.address
+                this.user.city = user.city
+                this.user.state = user.state
+                this.user.zip = user.zip
+                localStorage.setItem("old_username", user.username)
+                createCookie("user", user.username, 2)
+                this.$store.state.user = user.username
+                this.$emit('successAuthMessage', "Successfully Updated!")
+            }
             this.error.username_exists[0] = ""
             this.error.email_valid[0] = ""
             this.error.password_valid[0] = ""
             this.error.zip_valid[0] = ""
-            let signUpModal = document.getElementById('signupModal')
-            signUpModal.classList.remove('show')
-            signUpModal.style.display = "none"
-            this.$emit('successAuthMessage', "Successfully Signed Up!")
+            if (this.type.toLowerCase() == "signup") { 
+                let signUpModal = document.getElementById('signupModal')
+                signUpModal.classList.remove('show')
+                signUpModal.style.display = "none"
+                let backdrop = document.getElementsByClassName('modal-backdrop')[0]
+                if (backdrop) {
+                    backdrop.classList.remove('show')
+                    backdrop.style.display = "none"
+                }
+                let body = document.querySelector('body')
+                body.classList.remove('modal-open')
+                this.$emit('successAuthMessage', "Successfully Signed Up!")
+            }
           }
         } else {
           this.error.general[0] = true
         }
+      },
+      async fetchDetails () {
+          let data = {
+            purpose: "",
+            user: {
+                "username": this.$store.state.user
+            }
+          }
+
+          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+          let user = req.data
+          this.user.username = user.username
+          this.user.email = user.email
+          this.user.address = user.address
+          this.user.state = user.state
+          this.user.city = user.city
+          this.user.zip = user.zip.toString()
+          localStorage.setItem("old_username", user.username)
       },
 
       // UTILITIES
@@ -261,7 +327,7 @@ export default {
           if (!checking_box) {  // If checking_text empty, then empty message console
               user_show[0] = ""
           }
-      }
+      },
   }
 }
 </script>

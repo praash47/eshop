@@ -1,7 +1,7 @@
 <template>
 <div id="app">
-  <Header />
-  <router-view />
+  <Header :message="message" @modalclosed="resetMessage" />
+  <router-view @successAuthMessage="emitBack"  />
   <Footer />
 </div>
 </template>
@@ -22,11 +22,20 @@ import Footer from './components/Footer.vue'
 export default {
   data() {
     return {
+      message: ""
     }
   },
   components: {
     Header,
     Footer
   },
+  methods: {
+    emitBack (message) {
+      this.message = message
+    },
+    resetMessage () {
+      this.message = ""
+    }
+  }
 }
 </script>

@@ -118,7 +118,7 @@ class CustomerView(APIView):
 
             # If user exists, send its instance, else nothing
             if user_object:
-                return Response({"exists": "true"})
+                return Response({"exists": "true", "user": user['username']})
             else:
                 return Response({})
 
@@ -162,11 +162,12 @@ class CustomerView(APIView):
             })
 
         elif data['purpose'] == "update":
+            print(user)
             # Split from + into old and new username.
             old_username = user['username'].split('+')[0]
             user['username'] = user['username'].split('+')[1]
-            user_object = User.objects.get(username=old_username)
-            customer = Customer.objects.get(user=user_object.id)
+            user_object = User.objects.filter(username=old_username)[0]
+            customer = Customer.objects.filter(user=user_object.id)[0]
 
             if user['password']:  # user wants to change password
                 user_object.set_password(user['password'])
@@ -179,4 +180,31 @@ class CustomerView(APIView):
             customer.state = user['state']
             customer.zip = user['zip']
             customer.save()
-            return Response({"update": "success"})
+
+            response = {
+                "success": "true",
+                "user": {
+                    "username": user_object.username,
+                    "email": user_object.email,
+                    "address": customer.address,
+                    "state": customer.state,
+                    "city": customer.city,
+                    "zip": customer.zip
+                }
+            }
+
+            return Response(response)
+        
+        user_object = User.objects.get(username=user['username'])
+        customer = Customer.objects.get(user=user_object)
+
+        response = {
+            "username": user_object.username,
+            "email": user_object.email,
+            "address": customer.address,
+            "state": customer.state,
+            "city": customer.city,
+            "zip": customer.zip
+        }
+        
+        return Response(response)

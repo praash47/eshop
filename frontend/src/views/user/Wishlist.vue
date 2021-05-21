@@ -1,31 +1,38 @@
 <template>
-    <div class="wishlist-container">
-      <!-- Breadcrumbs -->
-      <div class="breadcrumbs">
-        <div class="container">
-          <div class="row">
-            <div class="col-12">
-              <div class="bread-inner">
-                <ul class="bread-list">
-                  <li><router-link to="/">Home<i class="ti-arrow-right"></i></router-link></li>
-                  <li class="active"><router-link to="/wishlist">Wishlist</router-link></li>
-                </ul>
+    <div>
+      <div class="wishlist-container" v-if="user_logged_in">
+        <!-- Breadcrumbs -->
+        <div class="breadcrumbs">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <div class="bread-inner">
+                  <ul class="bread-list">
+                    <li><router-link to="/">Home<i class="ti-arrow-right"></i></router-link></li>
+                    <li class="active"><router-link to="/wishlist">Wishlist</router-link></li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <!-- End Breadcrumbs -->
+      <ProductsShowcase title="Wishlist" :data="trendings" />
       </div>
-      <!-- End Breadcrumbs -->
-    <ProductsShowcase title="Wishlist" :data="trendings" />
+      <LoginToView type="page" v-else/>
     </div>
 </template>
 <script>
 import ProductsShowcase from '../../components/home/ProductsShowcase.vue'
+import stateMixins from '../../mixins/stateMixins'
+import LoginToView from '../../components/LoginToView.vue'
 
 export default {
   name: 'Wishlist',
+  mixins: [stateMixins],
   components: {
     ProductsShowcase,
+		LoginToView
   },
   data () {
     return {

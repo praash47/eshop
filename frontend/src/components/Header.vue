@@ -26,7 +26,7 @@
                     </div>
                     <div class="right-content" v-else>
                       Logged in as <router-link to="/profile"><b>{{ user_logged_in }}</b></router-link>
-                      <button class="btn btn-sm btn-danger" @click="logout()">Logout</button>
+                      <button class="btn btn-sm btn-danger" @click="logout">Logout</button>
                     </div>
                     <!-- End Top Right -->
                 </div>
@@ -136,7 +136,7 @@
                                     {{ error.invalid_login }}
                                 </div><br>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                <button type="submit" class="btn btn-primary ml-1">Login</button>
                             </form>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="SignupModalLabel">Sign up</h5>
+                            <h5 class="modal-title" id="SignupModalLabel">Signup</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
@@ -185,10 +185,14 @@
 import Navigation from './Navigation.vue'
 import UserDetailsAddEdit from './user/UserDetailsAddEdit.vue'
 import { sendRequest, createCookie } from '../views/functions'
+import stateMixins from '../mixins/stateMixins'
 
 
 export default {
   name: 'Header',
+  mixins: [stateMixins],
+  props: ['message'],
+  emits: ['modalclosed'],
   components: {
     Navigation,
     UserDetailsAddEdit
@@ -213,9 +217,6 @@ export default {
       password () {
         return this.user.password
       },
-      user_logged_in () {
-        return this.$store.state.user
-      }
   },
   watch: {
       search () {
@@ -235,6 +236,11 @@ export default {
       },
       password () {
           this.clearErrors()
+      },
+      message () {
+          if(this.message) {
+            this.showSuccessModal(this.message)
+          }
       }
   },
   methods: {
@@ -275,33 +281,37 @@ export default {
           this.showSuccessModal(logout)
         }
       },
-
-
-      showSuccessModal (message) {
-          this.success_message = message
-          let successModal = document.getElementById('successModal')
-          successModal.classList.add('show')
-          successModal.style.display = 'block'
-          let backdrop = document.getElementsByClassName('modal-backdrop')[0]
-          if (backdrop) {
-            backdrop.style.display = "none"
-            backdrop.classList.remove('show')
-          }
-      },
       closeSuccessModal () {
           let el = document.getElementById('successModal')
           el.classList.remove('show')
           el.style.display = "none"
           this.success_message = ""
           let backdrop = document.getElementsByClassName('modal-backdrop')[0]
-          backdrop.style.display = "none"
-          backdrop.classList.remove('show')
+          if (backdrop) {
+              backdrop.style.display = "none"
+              backdrop.classList.remove('show')
+          }
           let backdrop2 = document.querySelectorAll('.modal-backdrop.show')[0]
-          backdrop2.style.display = "none"
-          backdrop2.classList.remove('show')
+          if (backdrop2) {
+              backdrop2.style.display = "none"
+              backdrop2.classList.remove('show')
+          }
           let body = document.querySelector('body')
           body.classList.remove('modal-open')
           body.style.paddingRight = "0"
+          this.$emit('modalclosed')
+      },
+      showSuccessModal (message) {
+          this.success_message = message
+          let successModal = document.getElementById('successModal')
+          successModal.classList.add('show')
+          successModal.style.display = 'block'
+        
+          let backdrop = document.getElementsByClassName('modal-backdrop')[0]
+          if (backdrop) {
+            backdrop.style.display = "none"
+            backdrop.classList.remove('show')
+          }
       },
       clearErrors () {
           if (this.user.username == "" || this.user.password == "") {
