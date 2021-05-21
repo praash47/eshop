@@ -282,6 +282,11 @@ export default {
           let successModal = document.getElementById('successModal')
           successModal.classList.add('show')
           successModal.style.display = 'block'
+          let backdrop = document.getElementsByClassName('modal-backdrop')[0]
+          if (backdrop) {
+            backdrop.style.display = "none"
+            backdrop.classList.remove('show')
+          }
       },
       closeSuccessModal () {
           let el = document.getElementById('successModal')
@@ -289,10 +294,11 @@ export default {
           el.style.display = "none"
           this.success_message = ""
           let backdrop = document.getElementsByClassName('modal-backdrop')[0]
-          if (backdrop) {
-            backdrop.style.display = "none"
-            backdrop.classList.remove('show')
-          }
+          backdrop.style.display = "none"
+          backdrop.classList.remove('show')
+          let backdrop2 = document.querySelectorAll('.modal-backdrop.show')[0]
+          backdrop2.style.display = "none"
+          backdrop2.classList.remove('show')
           let body = document.querySelector('body')
           body.classList.remove('modal-open')
           body.style.paddingRight = "0"
@@ -736,7 +742,6 @@ export default {
   border: 1px solid #ececec;
 }
 .header.shop .search-bar form {
-    display: inline-block;
     float: left;
     width: 260px;
 }
@@ -804,11 +809,9 @@ export default {
 }
 .header.shop .menu-origin {
     float:none;
-    display: inline-block;
     float: right;
 }
 .header.shop .right-bar {
-    display: inline-block;
     padding: 0;
     margin: 0;
     top: 20px;

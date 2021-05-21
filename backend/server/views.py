@@ -123,7 +123,7 @@ class CustomerView(APIView):
                 return Response({})
 
         elif data['purpose'] == "signup":
-            user_object = User.objects.create(
+            user_object = User.objects.create_user(
                 username=user['username'], password=user['password'],
                 email=user['email']
             )

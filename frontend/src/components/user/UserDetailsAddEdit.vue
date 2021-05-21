@@ -198,12 +198,17 @@ export default {
       async sendDetails () {
         let error_count = document.getElementsByClassName('text-danger').length - 1
 
+        // Filter out other text-danger elements.
         if(document.getElementsByClassName('text-danger').length > 1){
-          if (document.getElementsByClassName('text-danger')[1].textContent == 
-          this.error.general[1]) {
-            error_count -= 1
-          }
-        }  
+            for (let i=0; i<document.getElementsByClassName('text-danger').length; i++) {
+                if(document.getElementsByClassName('text-danger')[i].textContent == this.error.general[1]) {
+                    error_count -= 1
+                }
+                else if(document.getElementsByClassName('text-danger')[i].textContent == "Invalid login") {
+                    error_count -= 1
+                }
+            }
+        }
         // 2 implies one all required fields, and general error itself
         if (error_count < 1) {
           this.error.general[0] = false
@@ -232,8 +237,7 @@ export default {
             signUpModal.style.display = "none"
             this.$emit('successAuthMessage', "Successfully Signed Up!")
           }
-        }
-        else {
+        } else {
           this.error.general[0] = true
         }
       },
