@@ -1,8 +1,9 @@
 import { createStore } from "vuex"
+import { accessCookie } from '../views/functions'
 
 const store = createStore({
     state: {
-        request_started: false,
+        user: accessCookie("user"),
     }
 })
 

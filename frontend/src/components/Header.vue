@@ -10,7 +10,7 @@
                     <div class="top-left">
                         <ul class="list-main">
                             <li>
-                                <i class="ti-headphone-alt"></i> +977 01 4437123 | <i class="ti-email"></i> support@eshop.com
+                                <i class="ti-headphone-alt"></i> <a href="tel:+977014437123">+977 01 4437123</a> | <i class="ti-email"></i> <a href="mailto:support@eshop.com">support@eshop.com</a>
                             </li>
                         </ul>
                     </div>
@@ -18,11 +18,15 @@
                 </div>
                 <div class="col-lg-8 col-md-12 col-12">
                     <!-- Top Right -->
-                    <div class="right-content">
+                    <div class="right-content" v-if="!user_logged_in">
                         <ul class="list-main">
                             <li><i class="ti-power-off"></i><a href="#" data-toggle="modal" data-target="#loginModal">Login</a></li>
                             <li><i class="ti-slice"></i><a href="#" data-toggle="modal" data-target="#signupModal">Signup</a></li>
                         </ul>
+                    </div>
+                    <div class="right-content" v-else>
+                      Logged in as <router-link to="/profile"><b>{{ user_logged_in }}</b></router-link>
+                      <button class="btn btn-sm btn-danger" @click="logout()">Logout</button>
                     </div>
                     <!-- End Top Right -->
                 </div>
@@ -36,7 +40,7 @@
                 <div class="col-lg-2 col-md-2 col-12">
                     <!-- Logo -->
                     <div class="logo">
-                        <a href="/"><img src="@/assets/logo.png" alt="logo"></a>
+                        <router-link to="/"><img src="@/assets/logo.png" alt="logo"></router-link>
                     </div>
                     <!--/ End Logo -->
                     <!-- Search Form -->
@@ -110,28 +114,31 @@
             <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="LoginModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="LoginModalLabel">Login</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="form-group">
-                                <label for="username">Username</label>
-                                <input type="text" class="form-control" id="username" placeholder="Enter your username">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" placeholder="Enter your password">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Login</button>
-                    </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="LoginModalLabel">Login</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form v-on:submit.prevent="login">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" v-model="user.username"
+                                    placeholder="Enter your username" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" v-model="user.password"
+                                    placeholder="Enter your password" required="required">
+                                </div>
+                                <div class="text-danger" v-if="error.invalid_login">
+                                    {{ error.invalid_login }}
+                                </div><br>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -139,19 +146,31 @@
             <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="SignupModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="SignupModalLabel">Sign up</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="SignupModalLabel">Sign up</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <UserDetailsAddEdit type="SignUp" @successAuthMessage="showSuccessModal"/>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <UserDetailsAddEdit />
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Signup</button>
-                    </div>
+                </div>
+            </div>
+            <!-- Success modal -->
+            <div class="modal fade" id="successModal" tabindex="-1">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="model-header">
+                            <button type="button" class="btn btn-sm btn-secondary"
+                            @click="closeSuccessModal()"
+                            style="padding: 4px 8px; text-transform: lowercase">x</button>
+                        </div>
+                        <div class="model-body">
+                            <img src="../assets/success-tick.gif" alt="success-tick">
+                            {{ success_message }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,6 +184,7 @@
 <script>
 import Navigation from './Navigation.vue'
 import UserDetailsAddEdit from './user/UserDetailsAddEdit.vue'
+import { sendRequest, createCookie } from '../views/functions'
 
 
 export default {
@@ -175,7 +195,26 @@ export default {
   },
   data () {
       return {
-          search: ''
+          search: '',
+          success_message: '',
+          user: {
+              username: '',
+              password: ''
+          },
+          error: {
+              invalid_login: ''
+          }
+      }
+  },
+  computed: {
+      username () {
+        return this.user.username
+      },
+      password () {
+        return this.user.password
+      },
+      user_logged_in () {
+        return this.$store.state.user
       }
   },
   watch: {
@@ -189,6 +228,78 @@ export default {
           }
           else {
               this.$router.push(searchQuery)
+          }
+      },
+      username () {
+          this.clearErrors()
+      },
+      password () {
+          this.clearErrors()
+      }
+  },
+  methods: {
+      async login () {
+          let data = {
+              purpose: "login",
+              user: this.user
+          }
+
+          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+          let logged_in = req.data.logged_in
+
+          if (logged_in == "Invalid login") {
+            this.error.invalid_login = logged_in
+          } else {
+            this.error.invalid_login = ""
+            this.user.username = ""
+            this.user.password = ""
+            let loginModal = document.getElementById('loginModal')
+            loginModal.classList.remove('show')
+            loginModal.style.display = "none"
+
+            this.showSuccessModal(logged_in)
+            this.$store.state.user = req.data.username
+            createCookie("user", req.data.username, 2)
+          }
+      },
+      async logout() {
+        let data = {
+          purpose: "logout",
+          user: {}
+        }
+        let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+        let logout = req.data.logout
+        if (logout == "Sucessfully Logged Out!") {
+          this.$store.state.user = ""
+          createCookie("user", "", 0)
+          this.showSuccessModal(logout)
+        }
+      },
+
+
+      showSuccessModal (message) {
+          this.success_message = message
+          let successModal = document.getElementById('successModal')
+          successModal.classList.add('show')
+          successModal.style.display = 'block'
+      },
+      closeSuccessModal () {
+          let el = document.getElementById('successModal')
+          el.classList.remove('show')
+          el.style.display = "none"
+          this.success_message = ""
+          let backdrop = document.getElementsByClassName('modal-backdrop')[0]
+          if (backdrop) {
+            backdrop.style.display = "none"
+            backdrop.classList.remove('show')
+          }
+          let body = document.querySelector('body')
+          body.classList.remove('modal-open')
+          body.style.paddingRight = "0"
+      },
+      clearErrors () {
+          if (this.user.username == "" || this.user.password == "") {
+            this.error.invalid_login = ""
           }
       }
   }
@@ -818,6 +929,23 @@ export default {
 /* Login Modal CSS */
 #loginModal .modal-title {
     text-align: center;
+}
+#successModal .modal-content {
+    align-items: flex-end;
+}
+#successModal .model-body {
+    padding-bottom: 15px;
+    font-size: 1.25em;
+    align-self: center;
+}
+#successModal .model-body img {
+    width: 50px;
+}
+.btn.btn-sm.btn-danger {
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    margin-left: 5px;
 }
 /*======================================
     End Header CSS

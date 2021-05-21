@@ -140,14 +140,14 @@ class CustomerView(APIView):
             user_object = authenticate(request, username=user['username'], password=user['password'])
             
             if not user_object:
-                return Response({"logged_in": "invalid login"})
+                return Response({"logged_in": "Invalid login"})
             else:
                 login(request, user_object)
-                return Response({"logged_in": "yes", "username": request.user})
+                return Response({"logged_in": "Successfully Logged In!", "username": request.user.username})
 
         elif data['purpose'] == "logout":
             logout(request)
-            return Response({"logout": "success"})
+            return Response({"logout": "Sucessfully Logged Out!"})
 
         elif data['purpose'] == "all_details":
             user_object = User.objects.filter(username=user["username"])[0]
