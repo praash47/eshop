@@ -78,7 +78,8 @@
     </div>
 </template>
 <script>
-import { sendRequest, createCookie } from '../../views/functions'
+import { sendRequest, createCookie, 
+        showOrHide, clearKeys } from '../../views/functions'
 
 export default {
   name: 'UserDetailsAddEdit',
@@ -143,9 +144,10 @@ export default {
               purpose: "username_check",
               user: this.user
           }
-          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+          let req = await sendRequest('server/customer/', data)
           let exists = req.data.exists || this.user.username.length < 2 ? "true" : ""
 
+          // Ignore even if username exists while update
           if (this.type == "Update") {
             exists = (req.data.user == localStorage.getItem("old_username")) ? "" : exists
           }
@@ -206,90 +208,68 @@ export default {
 
       // Towards Backend!
       async sendDetails () {
-        let error_count = document.querySelectorAll('.text-danger').length
-        // Filter out other text-danger elements.
-        if(document.querySelectorAll('.text-danger').length > 1){
-            for (let i=0; i<document.querySelectorAll('.text-danger').length; i++) {
-                if(document.querySelectorAll('.text-danger')[i].textContent == this.error.general[1]) {
-                    error_count -= 1
-                }
-                else if(document.querySelectorAll('.text-danger')[i].textContent == "Invalid login") {
-                    error_count -= 1
-                }
-                else if(document.querySelectorAll('.text-danger')[i].textContent == "* - all fields required") {
-                    error_count -= 1
-                }
-            }
-        }
-        // 2 implies one all required fields, and general error itself
+        let error_count = this.countErrors()
+        
         if (error_count < 1) {
-          this.error.general[0] = false
+          this.error.general[0] = false  // no error so don't show
 
           let username
+
+          // If updating, send old username + new username
           if(this.type == "Update") {  
              username = localStorage.getItem("old_username") + '+' + this.user.username
           }
 
           let data = {
-            purpose: this.type.toLowerCase(),
-            user: {
-                username: this.type == "Update" ? username : this.user.username,
-                email: this.user.email,
-                address: this.user.address,
-                state: this.user.state,
-                city: this.user.city,
-                zip: this.user.zip,
-                password: this.user.password
-            }
+            purpose: this.type.toLowerCase(),  // type contains add or update
+            user: this.user
           }
+          data.user.username = this.type == "Update" ? 
+                                username :
+                                this.user.username  // If updating, send old + new
 
-          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+          let req = await sendRequest('server/customer/', data)
           let success = req.data.success
           let user = req.data.user
+
           if (success == "true") {
-            this.user.password = ""
-            if (this.type.toLowerCase() == "signup") {    
-                this.user.username = ""
-                this.user.email = ""
-                this.user.address = ""
-                this.user.city = ""
-                this.user.state = ""
-                this.user.zip = ""
-            } else {   
-                this.user.username = user.username
-                this.user.email = user.email
-                this.user.address = user.address
-                this.user.city = user.city
-                this.user.state = user.state
-                this.user.zip = user.zip
+            if (this.type.toLowerCase() == "signup") { 
+                // Clear fields after signup.   
+                this.user = clearKeys(this.user)
+            } else {
+                this.user = user
+                this.user.password = ""
+                // set old username if updating
                 localStorage.setItem("old_username", user.username)
                 createCookie("user", user.username, 2)
                 this.$store.state.user = user.username
+                
                 this.$emit('successAuthMessage', "Successfully Updated!")
             }
+            // Clear errors
             this.error.username_exists[0] = ""
             this.error.email_valid[0] = ""
             this.error.password_valid[0] = ""
             this.error.zip_valid[0] = ""
             if (this.type.toLowerCase() == "signup") { 
+                // Remove all bootstrap classes
                 let signUpModal = document.getElementById('signupModal')
-                signUpModal.classList.remove('show')
-                signUpModal.style.display = "none"
+                showOrHide(signUpModal, false)
                 let backdrop = document.getElementsByClassName('modal-backdrop')[0]
                 if (backdrop) {
-                    backdrop.classList.remove('show')
-                    backdrop.style.display = "none"
+                    showOrHide(backdrop, false)
                 }
                 let body = document.querySelector('body')
                 body.classList.remove('modal-open')
                 this.$emit('successAuthMessage', "Successfully Signed Up!")
             }
           }
-        } else {
+        } else { // error occured
           this.error.general[0] = true
         }
       },
       async fetchDetails () {
+          // function used to fetchDetails while updating.
           let data = {
             purpose: "",
             user: {
@@ -297,18 +277,37 @@ export default {
             }
           }
 
-          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
-          let user = req.data
-          this.user.username = user.username
-          this.user.email = user.email
-          this.user.address = user.address
-          this.user.state = user.state
-          this.user.city = user.city
-          this.user.zip = user.zip.toString()
-          localStorage.setItem("old_username", user.username)
+          let req = await sendRequest('server/customer/', data)
+          this.user = req.data
+          // set old username
+          localStorage.setItem("old_username", this.user.username)
       },
 
       // UTILITIES
+      countErrors () {
+        let error_field = document.querySelectorAll('.text-danger')
+        let error_count =  error_field.length
+        
+        // Filter out other text-danger elements.
+        if(error_count > 0){
+            for (let i=0; i <= error_count; i++) {
+                const text = error_field[i].textContent
+                if(text == this.error.general[1]) {
+                    // error.general[i] -> main error displayed text
+                    error_count -= 1
+                }
+                else if(text == "Invalid login") {
+                    // filter out error from another login box
+                    error_count -= 1
+                }
+                else if(text == "* - all fields required") {
+                    // filter out all fields required.
+                    error_count -= 1
+                }
+            }
+        }   
+        return error_count
+      },
       showStatus (status, user_show, checking_box, status_message) {
           /*
           status: condition matches or not, if error occurs, true

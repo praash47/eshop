@@ -4,7 +4,7 @@
         <div class="card-deck">
             <div v-for="(item, index) in data" :key="item.id">
                 <SingleProduct v-if="index < 4" :price="item.price" :name="item.product_name"
-                :img_path="'http://127.0.0.1:8000' + item.img1" class="product"/>
+                :img_path="'http://100.83.99.77:8000' + item.img1" class="product"/>
             </div>
         </div>
     </div>
@@ -34,10 +34,6 @@ export default {
     props: ['title', 'data'],
     components: {
         SingleProduct
-    },
-    data () {
-        return {
-        }
     }
 }
 </script>

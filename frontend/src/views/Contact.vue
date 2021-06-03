@@ -129,17 +129,16 @@ export default {
                 'message': vm.message,
                 'phone': vm.phone
             };
-            var response = await sendRequest('http://127.0.0.1:8000/server/contact/', data)
+            var response = await sendRequest('server/contact/', data)
             if (response.status == 200) {
                 vm.messageToDisp = "Message successfully sent!"
-                vm.messageShow = true
                 vm.messageClass = 'alert-success'
             }
             else {
                 vm.messageToDisp = response['statusText']
-                vm.messageShow = true
                 vm.messageClass = 'alert-danger'
             }
+            vm.messageShow = true
       vm.clearFormData()
     },
     clearFormData () {

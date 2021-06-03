@@ -14,8 +14,10 @@ export default {
     // FETCH CATEGORIES AND SUBCATEGORIES
     fetchCategories: async function () {
         this.search_term = this.$route.query.search
-        let categories = await sendRequest('http://127.0.0.1:8000/server/categories/')
-        let subcategories = await sendRequest('http://127.0.0.1:8000/server/subcategories/')
+
+        // Fetch from server
+        let categories = await sendRequest('server/categories/')
+        let subcategories = await sendRequest('server/subcategories/')
         this.categories = categories.data
         this.subcategories = subcategories.data
         let path = this.$router.currentRoute.value.fullPath
@@ -33,6 +35,7 @@ export default {
         let keys = this.getKeys()
         return keys.includes(id)
     },
+    // Gets keys from subcategories
     getKeys() {
         const vm = this
         let keys = []
@@ -41,6 +44,7 @@ export default {
         }
         return keys
     },
+    // Get id from categories or subcategories
     getId: function (toGet='') {
       const isSubcategory = (toGet == 'subcategory')
       let getIdFrom = (isSubcategory) ? this.subcategories : this.categories

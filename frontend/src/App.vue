@@ -31,6 +31,7 @@ export default {
   },
   methods: {
     emitBack (message) {
+      // emitting the message received from child for displaying in message box.
       this.message = message
     },
     resetMessage () {

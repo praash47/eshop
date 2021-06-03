@@ -89,12 +89,6 @@
                                         <h4><a href="#">Woman Ring</a></h4>
                                         <p class="quantity">1x - <span class="amount">$99.00</span></p>
                                     </li>
-                                    <li>
-                                        <a href="#" class="remove" title="Remove this item"><i class="fa fa-remove"></i></a>
-                                        <a class="cart-img" href="#"><img src="https://via.placeholder.com/70x70" alt="#"></a>
-                                        <h4><a href="#">Woman Necklace</a></h4>
-                                        <p class="quantity">1x - <span class="amount">$35.00</span></p>
-                                    </li>
                                 </ul>
                                 <div class="bottom">
                                     <div class="total">
@@ -184,7 +178,7 @@
 <script>
 import Navigation from './Navigation.vue'
 import UserDetailsAddEdit from './user/UserDetailsAddEdit.vue'
-import { sendRequest, createCookie } from '../views/functions'
+import { sendRequest, createCookie, showOrHide, clearKeys } from '../views/functions'
 import stateMixins from '../mixins/stateMixins'
 
 
@@ -250,18 +244,17 @@ export default {
               user: this.user
           }
 
-          let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+          let req = await sendRequest('server/customer/', data)
           let logged_in = req.data.logged_in
 
           if (logged_in == "Invalid login") {
             this.error.invalid_login = logged_in
           } else {
             this.error.invalid_login = ""
-            this.user.username = ""
-            this.user.password = ""
+            clearKeys(this.user)
+
             let loginModal = document.getElementById('loginModal')
-            loginModal.classList.remove('show')
-            loginModal.style.display = "none"
+            showOrHide(loginModal, false)
 
             this.showSuccessModal(logged_in)
             this.$store.state.user = req.data.username
@@ -273,8 +266,9 @@ export default {
           purpose: "logout",
           user: {}
         }
-        let req = await sendRequest('http://127.0.0.1:8000/server/customer/', data)
+        let req = await sendRequest('server/customer/', data)
         let logout = req.data.logout
+        // Logout message
         if (logout == "Sucessfully Logged Out!") {
           this.$store.state.user = ""
           createCookie("user", "", 0)
@@ -283,34 +277,35 @@ export default {
       },
       closeSuccessModal () {
           let el = document.getElementById('successModal')
-          el.classList.remove('show')
-          el.style.display = "none"
+          showOrHide(el, false)
           this.success_message = ""
+
+          // Clear all bootstrap classes
           let backdrop = document.getElementsByClassName('modal-backdrop')[0]
           if (backdrop) {
-              backdrop.style.display = "none"
-              backdrop.classList.remove('show')
+              showOrHide(backdrop, false)
           }
           let backdrop2 = document.querySelectorAll('.modal-backdrop.show')[0]
           if (backdrop2) {
-              backdrop2.style.display = "none"
-              backdrop2.classList.remove('show')
+              showOrHide(backdrop2, false)
           }
           let body = document.querySelector('body')
           body.classList.remove('modal-open')
           body.style.paddingRight = "0"
+
+          // Emit modalclosed to App.vue
           this.$emit('modalclosed')
       },
       showSuccessModal (message) {
           this.success_message = message
+
+          // Show Bootstrap classes
           let successModal = document.getElementById('successModal')
-          successModal.classList.add('show')
-          successModal.style.display = 'block'
+          showOrHide(successModal, true)
         
           let backdrop = document.getElementsByClassName('modal-backdrop')[0]
           if (backdrop) {
-            backdrop.style.display = "none"
-            backdrop.classList.remove('show')
+              showOrHide(backdrop, false)
           }
       },
       clearErrors () {

@@ -134,6 +134,7 @@ class CustomerView(APIView):
                 zip=user['zip']
             )
             customer_object.save()
+            
             return Response({"success": "true"})
 
         elif data['purpose'] == "login":
@@ -195,16 +196,19 @@ class CustomerView(APIView):
 
             return Response(response)
         
+        # Return customer details in default. 
+
         user_object = User.objects.get(username=user['username'])
         customer = Customer.objects.get(user=user_object)
 
         response = {
             "username": user_object.username,
+            "password": "",
             "email": user_object.email,
             "address": customer.address,
             "state": customer.state,
             "city": customer.city,
-            "zip": customer.zip
+            "zip": str(customer.zip)
         }
         
         return Response(response)

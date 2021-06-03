@@ -140,7 +140,7 @@
                         </div>
                         <div class="product-grid">
                             <SingleProduct class="product-item" v-for="item in productslist" :key="item.id" :price="item.price" :name="item.product_name"
-                            :img_path="'http://127.0.0.1:8000' + item.img1" />
+                            :img_path="'http://192.168.5.138:8000' + item.img1" />
                         </div>
 					</div>
 				</div>
@@ -342,7 +342,7 @@ export default {
 
         // Fetch Products
         fetchProducts: async function () {
-            let products = await sendRequest('http://127.0.0.1:8000/server/products/', this.toFilter)
+            let products = await sendRequest('server/products/', this.toFilter)
             this.productslist = products.data
         },
 

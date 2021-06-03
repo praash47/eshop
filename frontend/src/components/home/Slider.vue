@@ -7,10 +7,6 @@
 </template>
 <script>
 export default {
-  name: 'slider',
-  data() {
-    return {
-      }
-  }
+  name: 'slider'
 }
 </script>
