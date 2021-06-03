@@ -1,12 +1,14 @@
+from django.http.response import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from .serializers import ContactResponseSerializer, ProductSerializer, \
+from .serializers import ContactResponseSerializer, OrderSerializer, ProductSerializer, \
     CategorySerializer, SubCategorySerializer, CustomerSerializer
-from .models import ContactResponse, Product, Category, SubCategory, Customer
+from .models import ContactResponse, Product, Category, SubCategory, Customer, \
+    Order
 
 class ContactView(APIView):
     model = ContactResponse
@@ -212,3 +214,37 @@ class CustomerView(APIView):
         }
         
         return Response(response)
+
+class OrderView(APIView):
+    model = Order
+
+    def get(self, request, *args, **kwargs):
+        qs = Order.objects.all()
+
+        serializer = OrderSerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = User.objects.get(username=data['username'])
+        qs = Order.objects.filter(user=user).order_by('-id')
+
+        if (data['cancelId']):
+            order = Order.objects.get(id=data['cancelId'])
+            order.status = "Cancelled"
+            order.save()
+
+            return JsonResponse({"success": "true"})
+
+        elif (data['data']):
+            data = data['data']
+            order = Order.objects.create(user=user, details=data['orderDetails'],
+            total=data['total'], status="Pending")
+            order.save()
+
+            return JsonResponse({"success": "true"})
+        
+        serializer = OrderSerializer(qs, many=True) 
+            
+        return Response(serializer.data)

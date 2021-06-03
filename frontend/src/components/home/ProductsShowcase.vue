@@ -2,9 +2,9 @@
     <div class="row">
         <h1>{{ title }}</h1>
         <div class="card-deck">
-            <div v-for="(item, index) in data" :key="item.id">
-                <SingleProduct v-if="index < 4" :price="item.price" :name="item.product_name"
-                :img_path="'http://100.83.99.77:8000' + item.img1" class="product"/>
+            <div v-for="(product, index) in products" :key="product.id">
+                <SingleProduct v-if="index < 4" :product="product"
+                :img_path="'http://100.83.99.77:8000' + product.img1" class="product"/>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
 <script>
 import SingleProduct from '../SingleProduct.vue'
 export default {
-    props: ['title', 'data'],
+    props: ['title', 'products'],
     components: {
         SingleProduct
     }

@@ -39,7 +39,7 @@
                                     <li>Nepal ko naya bato street</li>
                                     <li>Nepal pradesh no. 4</li>
                                     <li>support@eshop.com</li>
-                                    <li>+977 01 4437123</li>
+                                    <li><a href="tel: +977014437123">+977 01 4437123</a></li>
                                 </ul>
                             </div>
                             <!-- End Single Widget -->

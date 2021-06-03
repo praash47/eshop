@@ -74,32 +74,7 @@
                         <div class="sinlge-bar">
                             <router-link to="/profile" class="single-icon"><i class="fa fa-user-circle-o" aria-hidden="true" title="Profile"></i></router-link>
                         </div>
-                        <div class="sinlge-bar shopping">
-                            <a href="#" class="single-icon"><i class="ti-bag"></i> <span class="total-count">2</span></a>
-                            <!-- Shopping Item -->
-                            <div class="shopping-item">
-                                <div class="dropdown-cart-header">
-                                    <span>2 Items</span>
-                                    <a href="cart">View Cart</a>
-                                </div>
-                                <ul class="shopping-list">
-                                    <li>
-                                        <a href="#" class="remove" title="Remove this item"><i class="fa fa-remove"></i></a>
-                                        <a class="cart-img" href="#"><img src="https://via.placeholder.com/70x70" alt="#"></a>
-                                        <h4><a href="#">Woman Ring</a></h4>
-                                        <p class="quantity">1x - <span class="amount">$99.00</span></p>
-                                    </li>
-                                </ul>
-                                <div class="bottom">
-                                    <div class="total">
-                                        <span>Total</span>
-                                        <span class="total-amount">$134.00</span>
-                                    </div>
-                                    <a href="checkout" class="btn animate">Checkout</a>
-                                </div>
-                            </div>
-                            <!--/ End Shopping Item -->
-                        </div>
+                        <Cart />
                     </div>
                 </div>
             </div>
@@ -177,6 +152,7 @@
 
 <script>
 import Navigation from './Navigation.vue'
+import Cart from './Cart.vue'
 import UserDetailsAddEdit from './user/UserDetailsAddEdit.vue'
 import { sendRequest, createCookie, showOrHide, clearKeys } from '../views/functions'
 import stateMixins from '../mixins/stateMixins'
@@ -189,6 +165,7 @@ export default {
   emits: ['modalclosed'],
   components: {
     Navigation,
+    Cart,
     UserDetailsAddEdit
   },
   data () {

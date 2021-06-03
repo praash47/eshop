@@ -52,3 +52,25 @@ class Customer(models.Model):
 
 	def __str__(self):
 		return str(self.user)
+
+class Order(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	details = models.JSONField()
+	total = models.FloatField()
+
+	STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Shipped', 'Shipped'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
+    ]
+	
+	status = models.CharField(
+		max_length=10,
+        choices=STATUS_CHOICES,
+        default='Pending',
+    )
+
+	def __str__(self):
+		return str('Order Id ' + str(self.id))

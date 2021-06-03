@@ -139,8 +139,8 @@
                             <span class="close" @click="clear">x</span>
                         </div>
                         <div class="product-grid">
-                            <SingleProduct class="product-item" v-for="item in productslist" :key="item.id" :price="item.price" :name="item.product_name"
-                            :img_path="'http://192.168.5.138:8000' + item.img1" />
+                            <SingleProduct class="product-item" v-for="product in productslist" :key="product.id" :product="product"
+                            />
                         </div>
 					</div>
 				</div>

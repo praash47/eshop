@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ContactResponse, Product, Category, SubCategory, Customer
+from .models import ContactResponse, Product, Category, SubCategory, Customer, Order
 
 class ContactResponseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +11,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'sub_category', 'product_name', 'description', 'price',
+            'id', 'sub_category', 'product_name', 'description', 'price',
             'img1', 'in_stock', 'stock_num'
         ]
 
@@ -35,4 +35,11 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = [
             'user', 'address', 'city', 'state', 'zip'
+        ]
+        
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'user', 'details', 'total', 'status'
         ]

@@ -21,7 +21,7 @@
             <div class="collapsible" v-for="cat in categories" :key="cat.id">
                 <div class="imgBx">
                     <h2><router-link :to="'/shop-grid/' + cat.cat_name.toLowerCase()">{{ cat.cat_name }}</router-link></h2>
-                    <img :src="'http://192.168.5.138:8000' + cat.cat_img">
+                    <img :src="'http://192.168.5.113:8000' + cat.cat_img">
                     <span @click="toggleCollapse" v-if="subCatsThere(cat.id)">▼</span>
                 </div>
                 <div class="collapsible-contents">       

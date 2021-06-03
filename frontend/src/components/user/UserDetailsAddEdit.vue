@@ -71,7 +71,7 @@
             <button type="submit" class="btn btn-primary">{{ type }}</button>
         </div>
       </form>
-      <span class="text-danger" v-if="error.general[0]">
+      <span class="text-danger main-error" v-if="error.general[0]">
         <!-- 0 - general error there or not, 1 - general error message -->
         {{ error.general[1] }}
       </span>
@@ -287,14 +287,16 @@ export default {
       countErrors () {
         let error_field = document.querySelectorAll('.text-danger')
         let error_count =  error_field.length
-        
         // Filter out other text-danger elements.
         if(error_count > 0){
+            let main_error = document.querySelectorAll('.main-error')[0]
+            let mainErrorFiltered = false
             for (let i=0; i <= error_count; i++) {
                 const text = error_field[i].textContent
-                if(text == this.error.general[1]) {
+                if(main_error && !mainErrorFiltered) {
                     // error.general[i] -> main error displayed text
                     error_count -= 1
+                    mainErrorFiltered = true
                 }
                 else if(text == "Invalid login") {
                     // filter out error from another login box

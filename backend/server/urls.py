@@ -1,5 +1,6 @@
 from django.urls import path
-from server.views import ContactView, ProductView, CategoryView, SubCategoryView, CustomerView
+from .views import ContactView, ProductView, CategoryView, SubCategoryView, CustomerView, \
+    OrderView
 
 urlpatterns = [
     path('contact/', ContactView.as_view()),
@@ -7,4 +8,5 @@ urlpatterns = [
     path('categories/', CategoryView.as_view()),
     path('subcategories/', SubCategoryView.as_view()),
     path('customer/', CustomerView.as_view()),
+    path('orders/', OrderView.as_view()),
 ]

@@ -5,10 +5,10 @@
       <Slider />
     </div>
     <FeaturedCats />
-    <ProductsShowcase title="Featured Products" :data="trendings" />
-    <ProductsShowcase title="Trending Items" :data="trendings"/>
-    <ProductsShowcase title="New Arrivals" :data="trendings" />
-    <ProductsShowcase title="Offers" :data="trendings" />
+    <ProductsShowcase title="Featured Products" :products="test_products" />
+    <ProductsShowcase title="Trending Items" :products="test_products"/>
+    <ProductsShowcase title="New Arrivals" :products="test_products" />
+    <ProductsShowcase title="Offers" :products="test_products" />
   </div>
 </template>
 
@@ -28,7 +28,7 @@ export default {
   },
   data () {
     return {
-      trendings: [
+      test_products: [
         {'id': 0, 'product_name': 'Book', 'price': 6000},
         {'id': 1, 'product_name': 'Wool', 'price': 6000},
         {'id': 2, 'product_name': 'Khadkulo', 'price': 10000},

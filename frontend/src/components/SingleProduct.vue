@@ -1,39 +1,31 @@
 <template>
     <div class="card">
-        <img class="card-img-top" :src="img_path" :alt="name">
+        <img class="card-img-top" :src="'http://192.168.5.113:8000' + product.img1" :alt="product.name">
         <div class="card-body">
-            <h5 class="card-title">{{ name }}</h5>
-            <p>Rs. {{ price }}</p>
-            <div class="cart-qty" v-if="qty > 0">
-                <button class="btn btn-sm" @click="plus">+</button>
-                <input type="number" :value="qty" id="qty">
-                <button class="btn btn-sm" @click="minus">-</button>
+            <h5 class="card-title">{{ product.product_name }}</h5>
+            <p>Rs. {{ product.price }}</p>
+            <div class="cart-qty" v-if="quantity || quantity > 0">
+                <button class="btn btn-sm" @click="plus()">+</button>
+                <input type="number" :value="quantity" id="qty" readonly="readonly">
+                <button class="btn btn-sm" @click="minus()">-</button>
             </div>
-            <button class="btn" @click="plus" v-else><i class="ti-shopping-cart"></i> Add to Cart</button><br><br>
+            <button class="btn" @click="plus()" v-else><i class="ti-shopping-cart"></i> Add to Cart</button><br><br>
             <button class="btn" style="background: #FF4136;"><i class="fa fa-heart-o" aria-hidden="true"></i> Add to Wishlist</button>
         </div>
     </div>
 </template>
 <script>
+import stateMixins from '../mixins/stateMixins'
 
 export default {
     name: 'Single Product',
-    props: ['price', 'name', 'img_path'],
-    data () {
-        return {
-            qty: 0
+    props: ['product'],
+    mixins: [stateMixins],
+    computed: { 
+        quantity() {
+            return this.$store.getters.productQuantity(this.product)
         }
     },
-    methods: {
-        plus () {
-            this.qty += 1
-        },
-        minus () {
-            if (this.qty >= 0) {
-                this.qty -= 1
-            }
-        }
-    }
 }
 </script>
 <style scoped>
@@ -45,7 +37,7 @@ export default {
     margin: 0;
 }
 .btn.btn-sm {
-    padding: 15px 30px;
+    padding: 10px 20px;
 }
 #qty {
     width: 50px;

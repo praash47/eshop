@@ -31,23 +31,22 @@
                   <th class="text-center">UNIT PRICE</th>
                   <th class="text-center">QUANTITY</th>
                   <th class="text-center">TOTAL</th> 
-                  <th class="text-center"><i class="ti-trash remove-icon"></i></th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="image" data-title="No"><img src="https://via.placeholder.com/100x100" alt="#"></td>
+                <tr v-for="item in cart" :key="item.id">
+                  <td class="image" data-title="No"><img  :src="'http://192.168.5.113:8000' + item.img1" :alt="item.product_name"></td>
                   <td class="product-des" data-title="Description">
-                    <p class="product-name"><a href="#">Women Dress</a></p>
-                    <p class="product-des">Maboriosam in a tonto nesciung eget  distingy magndapibus.</p>
+                    <p class="product-name"><a href="#">{{ item.product_name }}</a></p>
                   </td>
-                  <td class="price" data-title="Price"><span>Rs. 110.00 </span></td>
+                  <td class="price" data-title="Price"><span>Rs. {{ item.price }} </span></td>
                   <td class="qty" data-title="Qty"><!-- Input Order -->
-                    <input type="number" style="max-width:100px;">
+                    <button @click="plus(item)">+</button>
+                      <input type="text" :value="item.quantity" readonly="readonly" style="width: 20px;"> 
+                    <button @click="minus(item)">-</button>
                     <!--/ End Input Order -->
                   </td>
-                  <td class="total-amount" data-title="Total"><span>Rs. 220.88</span></td>
-                  <td class="action" data-title="Remove"><a href="#"><i class="ti-trash remove-icon"></i></a></td>
+                  <td class="total-amount" data-title="Total"><span>Rs. {{ item_total(item) }}</span></td>
                 </tr>
               </tbody>
             </table>
@@ -62,9 +61,9 @@
                 <div class="col">
                   <div class="right">
                     <ul>
-                      <li>Cart Subtotal<span>Rs. 330.00</span></li>
+                      <li>Cart Subtotal<span>Rs. {{ cart_total }}</span></li>
                       <li>Shipping<span>Free</span></li>
-                      <li class="last">You Pay<span>Rs. 310.00</span></li>
+                      <li class="last">You Pay <span>Rs. {{ cart_total }}</span></li>
                     </ul>
                     <div class="button5">
                       <router-link to="checkout" class="btn">Checkout</router-link>
@@ -83,12 +82,10 @@
   </div>
 </template>
 <script>
+import stateMixins from '../mixins/stateMixins'
 export default {
   name: 'Cart',
-  data () {
-      return {
-      }
-  }
+  mixins: [stateMixins]
 }
 </script>
 <style scoped>
