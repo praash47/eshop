@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export async function sendRequest(url, data) {
     try {
-        url = 'http://192.168.5.113:8000/' + url
+        url = 'http://192.168.5.138:8000/' + url
         const response = await axios.post(
             url,
             data

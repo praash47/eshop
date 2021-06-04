@@ -58,5 +58,17 @@ export default {
       }
       return null
     },
+    getSubcatIdsByCatId: function () {
+        /*
+        This function takes in current cat id from vue instance, and
+        picks out ids of the current category.
+        */
+        let subcategoryids = [], vm = this
+        for (const subcategoryIndex in vm.subcategories) {
+            if (vm.subcategories[subcategoryIndex]['category'] == vm.curr_cat_id)
+                subcategoryids.push(vm.subcategories[subcategoryIndex]['id'])
+        }
+        return subcategoryids
+    },
   }
 }

@@ -35,9 +35,15 @@
               </thead>
               <tbody>
                 <tr v-for="item in cart" :key="item.id">
-                  <td class="image" data-title="No"><img  :src="'http://192.168.5.113:8000' + item.img1" :alt="item.product_name"></td>
+                  <td class="image" data-title="No">
+                  <router-link :to="'/product/' + item.product_name">
+                    <img :src="'http://192.168.5.138:8000' + item.img1" :alt="item.product_name">
+                  </router-link>
+                  </td>
                   <td class="product-des" data-title="Description">
-                    <p class="product-name"><a href="#">{{ item.product_name }}</a></p>
+                  <router-link :to="'/product/' + item.product_name">
+                    <p class="product-name">{{ item.product_name }}</p>
+                  </router-link>
                   </td>
                   <td class="price" data-title="Price"><span>Rs. {{ item.price }} </span></td>
                   <td class="qty" data-title="Qty"><!-- Input Order -->

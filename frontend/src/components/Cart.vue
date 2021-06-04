@@ -5,12 +5,16 @@
         <div class="shopping-item">
             <div class="dropdown-cart-header">
                 <span>{{ cart_length }} Items</span>
-                <a href="cart">View Cart</a>
+                <router-link to="/cart">View Cart</router-link>
             </div>
             <ul class="shopping-list">
                 <li v-for="item in cart" :key="item.id">
-                    <a class="cart-img" href="#"><img :src="'http://192.168.5.113:8000' + item.img1" :alt="item.product_name"></a>
-                    <h4><a href="#">{{ item.product_name }}</a></h4>
+                    <router-link :to="'/product/' + item.product_name">
+                        <img :src="'http://192.168.5.138:8000' + item.img1" :alt="item.product_name">
+                    </router-link>
+                    <router-link :to="'/product/' + item.product_name">
+                        <h4>{{ item.product_name }}</h4>
+                    </router-link>
                     <p class="quantity">
                         <button @click="plus(item)">+</button>
                          <input type="text" :value="item.quantity" readonly="readonly" style="width: 20px;"> 

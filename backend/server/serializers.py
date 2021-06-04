@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import ContactResponse, Product, Category, SubCategory, Customer, Order
+from .models import ContactResponse, Product, Category, SubCategory, Customer, Order,\
+    Rating
 
 class ContactResponseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,4 +43,11 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'user', 'details', 'total', 'status'
+        ]
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = [
+            'id', 'product', 'user', 'rating_value'
         ]

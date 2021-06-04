@@ -20,6 +20,7 @@ npm i --save vue
 npm i -g @vue/cli
 npm i --save vue-router
 npm i --save vuex
+npm install vue-star-rating@next
 ```
 
 

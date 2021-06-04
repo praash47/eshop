@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from .serializers import ContactResponseSerializer, OrderSerializer, ProductSerializer, \
-    CategorySerializer, SubCategorySerializer, CustomerSerializer
+    CategorySerializer, RatingSerializer, SubCategorySerializer, CustomerSerializer, \
+    RatingSerializer
 from .models import ContactResponse, Product, Category, SubCategory, Customer, \
-    Order
+    Order, Rating
 
 class ContactView(APIView):
     model = ContactResponse
@@ -76,7 +77,6 @@ class ProductView(APIView):
     def post(self, request, *args, **kwargs):
         qs = Product.objects.all()
 
-        print(request.data)
         if request.data['needed'] == 'filtered_orand_sorted':
             for filtering_with in request.data['filtering_by']:
                 if filtering_with == "subcategory":
@@ -96,7 +96,13 @@ class ProductView(APIView):
                 
                 if request.data['ordered_by'] == 'desc':
                     qs = qs.reverse()
-            
+
+        elif request.data['needed'] == 'single_product':
+            qs = Product.objects.filter(product_name=request.data['product_name'])
+
+        elif request.data['needed'] == 'latest_products':
+            qs = Product.objects.order_by('-id')[:4]  # 4 latest products
+
         serializer = ProductSerializer(qs, many=True)
             
         return Response(serializer.data)
@@ -123,6 +129,10 @@ class CustomerView(APIView):
                 return Response({"exists": "true", "user": user['username']})
             else:
                 return Response({})
+
+        elif data['purpose'] == 'get_id_from_name':
+            user_object = User.objects.get(username=data['user'])
+            return JsonResponse({"id": user_object.id})
 
         elif data['purpose'] == "signup":
             user_object = User.objects.create_user(
@@ -248,3 +258,43 @@ class OrderView(APIView):
         serializer = OrderSerializer(qs, many=True) 
             
         return Response(serializer.data)
+
+class RatingView(APIView):
+    model = Rating
+
+    def get(self, request, *args, **kwargs):
+        qs = Rating.objects.all()
+
+        serializer = RatingSerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        qs = Product.objects.all()
+        product = Product.objects.get(product_name=data['product_name'])
+        print(data)
+
+        if (data["rating_option"] == "add"):
+            user = User.objects.get(username=data['user_name'])
+            qs = Rating.objects.create(user=user, product=product, rating_value=data['rating_value'])
+            qs.save()
+
+        elif (data["rating_option"] == "update"):
+            user = User.objects.get(username=data['user_name'])
+            qs = Rating.objects.get(user=user, product=product)
+            qs.rating_value = data['rating_value']
+            qs.save()
+            
+        elif (data["rating_option"] == "delete"):
+            user = User.objects.get(username=data['user_name'])
+            qs = Rating.objects.get(user=user, product=product)
+            qs.delete()
+            
+        qs = Rating.objects.filter(product=product)
+
+        serializer = RatingSerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    

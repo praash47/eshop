@@ -6,6 +6,7 @@ from .models import Product
 from .models import ContactResponse
 from .models import Customer
 from .models import Order
+from .models import Rating
 
 admin.site.register(Category)
 admin.site.register(SubCategory)
@@ -13,3 +14,4 @@ admin.site.register(Product)
 admin.site.register(ContactResponse)
 admin.site.register(Customer)
 admin.site.register(Order)
+admin.site.register(Rating)

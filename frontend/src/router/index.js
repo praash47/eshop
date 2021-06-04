@@ -72,6 +72,11 @@ const routes = [
     name: 'Search',
     component: () => import('../views/ShopGrid.vue')
   },
+  {
+    path: '/product/:product_name',
+    name: 'Product',
+    component: () => import('../views/Product.vue')
+  }
 ]
 
 const router = createRouter({

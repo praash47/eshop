@@ -74,3 +74,18 @@ class Order(models.Model):
 
 	def __str__(self):
 		return str('Order Id ' + str(self.id))
+
+class Rating(models.Model):
+    RATING_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating_value = models.IntegerField(choices=RATING_CHOICES)
+
+    def __str__(self):
+	    return str(self.product) + ' - ' + str(self.user) + ' - ' + str(self.rating_value)

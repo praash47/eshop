@@ -7,7 +7,7 @@
     <FeaturedCats />
     <ProductsShowcase title="Featured Products" :products="test_products" />
     <ProductsShowcase title="Trending Items" :products="test_products"/>
-    <ProductsShowcase title="New Arrivals" :products="test_products" />
+    <ProductsShowcase title="New Arrivals" :products="latest_products" />
     <ProductsShowcase title="Offers" :products="test_products" />
   </div>
 </template>
@@ -17,6 +17,7 @@ import Categories from '../components/home/Categories.vue'
 import Slider from '../components/home/Slider.vue'
 import FeaturedCats from '../components/home/FeaturedCats.vue'
 import ProductsShowcase from '../components/home/ProductsShowcase.vue'
+import { sendRequest } from './functions'
 
 export default {
   name: 'EshopHome',
@@ -25,6 +26,9 @@ export default {
     Slider,
     FeaturedCats,
     ProductsShowcase
+  },
+  mounted () {
+    this.fetchAllProducts()
   },
   data () {
     return {
@@ -39,7 +43,20 @@ export default {
         {'id': 7, 'product_name': 'Fan', 'price': 600},
         {'id': 8, 'product_name': 'Clock', 'price': 300},
       ],
-      categories: {}
+      categories: {},
+      latest_products: ""
+    }
+  },
+  methods: {
+    fetchAllProducts () {
+      this.fetchLatestProducts()
+    },
+    async fetchLatestProducts () {
+      let data = {
+        "needed": "latest_products"
+      }
+      let req = await sendRequest('server/products/', data)
+      this.latest_products = req.data
     }
   }
 }
