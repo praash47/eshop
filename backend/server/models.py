@@ -39,6 +39,7 @@ class Product(models.Model):
 	img1 = models.ImageField(upload_to="shop/products")
 	in_stock = models.BooleanField(default=True)
 	stock_num = models.IntegerField()
+	views = models.IntegerField(default=0)
 
 	def __str__(self):
 		return str(self.sub_category) + ' - ' + self.product_name

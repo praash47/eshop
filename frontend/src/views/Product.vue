@@ -45,7 +45,7 @@
               <span :class="colorCodeInStock">
                 <strong>In stock:</strong> {{ product.stock_num }} | 
               </span>
-              <strong>Views:</strong> 20<br>
+              <strong>Views:</strong> {{ product.views }}<br>
               <strong >Rating: </strong>
               <star-rating :star-size="25" 
                            :inline=true

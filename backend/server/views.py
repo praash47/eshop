@@ -98,10 +98,16 @@ class ProductView(APIView):
                     qs = qs.reverse()
 
         elif request.data['needed'] == 'single_product':
+            qs = Product.objects.get(product_name=request.data['product_name'])
+            qs.views += 1
+            qs.save()
             qs = Product.objects.filter(product_name=request.data['product_name'])
 
         elif request.data['needed'] == 'latest_products':
             qs = Product.objects.order_by('-id')[:4]  # 4 latest products
+
+        elif request.data['needed'] == 'trending_products':
+            qs = Product.objects.order_by('-views')[:4]  # 4 trending products
 
         serializer = ProductSerializer(qs, many=True)
             

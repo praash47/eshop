@@ -6,7 +6,7 @@
     </div>
     <FeaturedCats />
     <ProductsShowcase title="Featured Products" :products="test_products" />
-    <ProductsShowcase title="Trending Items" :products="test_products"/>
+    <ProductsShowcase title="Trending Items" :products="trending_products"/>
     <ProductsShowcase title="New Arrivals" :products="latest_products" />
     <ProductsShowcase title="Offers" :products="test_products" />
   </div>
@@ -44,19 +44,21 @@ export default {
         {'id': 8, 'product_name': 'Clock', 'price': 300},
       ],
       categories: {},
-      latest_products: ""
+      latest_products: "",
+      trending_products: ""
     }
   },
   methods: {
     fetchAllProducts () {
-      this.fetchLatestProducts()
+      this.fetchProductsByType("latest_products")
+      this.fetchProductsByType("trending_products")
     },
-    async fetchLatestProducts () {
+    async fetchProductsByType (products_type) {
       let data = {
-        "needed": "latest_products"
+        "needed": products_type
       }
       let req = await sendRequest('server/products/', data)
-      this.latest_products = req.data
+      this[products_type] = req.data
     }
   }
 }
