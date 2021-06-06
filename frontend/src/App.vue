@@ -1,7 +1,8 @@
 <template>
 <div id="app">
   <Header :message="message" @modalclosed="resetMessage" />
-  <router-view @successAuthMessage="emitBack"  />
+  <router-view @successAuthMessage="emitBack" />
+  <Recommendation />
   <Footer />
 </div>
 </template>
@@ -18,16 +19,26 @@
 <script>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
+import Recommendation from './components/Recommendation.vue'
 
 export default {
   data() {
     return {
-      message: ""
+      message: "",
+      trending_products: '',
     }
   },
   components: {
     Header,
-    Footer
+    Footer,
+    Recommendation
+  },
+  mounted () {
+    const views = JSON.parse(localStorage.getItem('views'))
+    if (views) this.$store.state.views = views
+
+    const wishlist = JSON.parse(localStorage.getItem('wishlist'))
+    if (wishlist) this.$store.state.wishlist = wishlist
   },
   methods: {
     emitBack (message) {

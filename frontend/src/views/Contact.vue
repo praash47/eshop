@@ -108,6 +108,7 @@
 import { sendRequest } from './functions.js'
 
 export default {
+  name: 'Contact',
   data () {
     return {
       name: '',

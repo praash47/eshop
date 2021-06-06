@@ -90,3 +90,17 @@ class Rating(models.Model):
 
     def __str__(self):
 	    return str(self.product) + ' - ' + str(self.user) + ' - ' + str(self.rating_value)
+
+class UserViews(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	views = models.JSONField()
+
+	def __str__(self):
+		return 'Views of ' + str(self.user)
+
+class Cluster(models.Model):
+    name = models.CharField(max_length=100)
+    users = models.ManyToManyField(User)
+
+    def get_members(self):
+        return "\n".join([u.username for u in self.users.all()])

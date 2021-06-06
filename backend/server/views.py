@@ -7,9 +7,10 @@ from django.contrib.auth import authenticate, login, logout
 
 from .serializers import ContactResponseSerializer, OrderSerializer, ProductSerializer, \
     CategorySerializer, RatingSerializer, SubCategorySerializer, CustomerSerializer, \
-    RatingSerializer
+    UserViewsSerializer
 from .models import ContactResponse, Product, Category, SubCategory, Customer, \
-    Order, Rating
+    Order, Rating, UserViews
+from .recommendation import Recommendation
 
 class ContactView(APIView):
     model = ContactResponse
@@ -284,7 +285,6 @@ class RatingView(APIView):
         if (data["rating_option"] == "add"):
             user = User.objects.get(username=data['user_name'])
             qs = Rating.objects.create(user=user, product=product, rating_value=data['rating_value'])
-            qs.save()
 
         elif (data["rating_option"] == "update"):
             user = User.objects.get(username=data['user_name'])
@@ -303,4 +303,44 @@ class RatingView(APIView):
 
         return Response(serializer.data)
 
-    
+class UserViewsView(APIView):   
+    model = UserViews
+
+    def get(self, request, *args, **kwargs):
+        qs = UserViews.objects.all()
+
+        serializer = UserViewsSerializer(qs, many=True) 
+
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = User.objects.get(username=data['username'])
+        try:
+            qs = UserViews.objects.get(user=user)
+            qs.views = data['views']
+        except:
+            qs = UserViews.objects.create(user=user, views=data['views'])
+        qs.save()
+        
+        return JsonResponse({})
+
+class RecommendationView(APIView):
+    model = Product
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        recommendation = ''
+        if len(data['wishlist']) > 0:
+            recommendation = Recommendation(data['username'], data['wishlist'])
+        else:
+            recommendation = Recommendation(data['username'])
+
+        recommended_products = recommendation.recommend()
+        
+        if not recommended_products:
+            return JsonResponse({})
+        
+        serializer = ProductSerializer(recommended_products, many=True)
+
+        return Response(serializer.data)

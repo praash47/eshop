@@ -10,7 +10,7 @@
             <ul class="shopping-list">
                 <li v-for="item in cart" :key="item.id">
                     <router-link :to="'/product/' + item.product_name">
-                        <img :src="'http://192.168.5.138:8000' + item.img1" :alt="item.product_name">
+                        <img :src="'http://192.168.5.113:8000' + item.img1" :alt="item.product_name">
                     </router-link>
                     <router-link :to="'/product/' + item.product_name">
                         <h4>{{ item.product_name }}</h4>

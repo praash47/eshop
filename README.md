@@ -11,6 +11,9 @@ pip install django
 pip install djangorestframework
 pip install django-cors-headers
 pip install Pillow
+pip install numpy
+pip install scipy
+pip install scikit-learn
 ```
 ### node
 navigate to `/frontend` and run:

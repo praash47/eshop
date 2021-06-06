@@ -44,6 +44,11 @@
     </ul>
   </div>
 </template>
+<script>
+export default {
+  name: 'About'
+}
+</script>
 <style scoped>
 h1, h2, p, ul, li {
   text-align: left;

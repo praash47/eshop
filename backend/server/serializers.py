@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import ContactResponse, Product, Category, SubCategory, Customer, Order,\
-    Rating
+    Rating, UserViews
 
 class ContactResponseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,4 +50,11 @@ class RatingSerializer(serializers.ModelSerializer):
         model = Rating
         fields = [
             'id', 'product', 'user', 'rating_value'
+        ]
+
+class UserViewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserViews
+        fields = [
+            'id', 'user', 'views'
         ]

@@ -63,28 +63,6 @@
                                 </ul>
                             </div>
                             <!--/ End Single Widget -->
-                            <!-- Single Widget -->
-                            <div class="single-widget recent-post">
-                                <h3 class="title">Recommendations</h3>
-                                <div class="single-post first">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/75x75" alt="#">
-                                    </div>
-                                    <div class="content">
-                                        <h5><a href="#">Girls Dress</a></h5>
-                                        <p class="price">$99.50</p>
-                                        <ul class="reviews">
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li class="yellow"><i class="ti-star"></i></li>
-                                            <li><i class="ti-star"></i></li>
-                                            <li><i class="ti-star"></i></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- End Single Post -->
-                            </div>
-                            <!--/ End Single Widget -->
 						</div>
 					</div>
 					<div class="col-lg-9 col-md-8 col-12">
@@ -159,8 +137,6 @@ export default {
     mixins: [fetch],   
     components: {
         SingleProduct
-    },
-    created () {
     },
     data () {
         return {

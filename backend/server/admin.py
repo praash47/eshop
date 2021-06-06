@@ -7,6 +7,8 @@ from .models import ContactResponse
 from .models import Customer
 from .models import Order
 from .models import Rating
+from .models import UserViews
+from .models import Cluster
 
 admin.site.register(Category)
 admin.site.register(SubCategory)
@@ -15,3 +17,5 @@ admin.site.register(ContactResponse)
 admin.site.register(Customer)
 admin.site.register(Order)
 admin.site.register(Rating)
+admin.site.register(UserViews)
+admin.site.register(Cluster)

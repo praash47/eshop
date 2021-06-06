@@ -33,7 +33,7 @@
         <div class="row">
           <!-- product image section -->
           <div class="col-md-6 col-sm-12">
-            <img :src="'http://192.168.5.138:8000' + product.img1" :alt="product.product_name">
+            <img :src="'http://192.168.5.113:8000' + product.img1" :alt="product.product_name">
           </div>
 
           <!-- product description section -->
@@ -59,7 +59,7 @@
             <details>
               <summary style="cursor: pointer;">Click to show product ratings</summary>
               <div>
-                <p>Please login show that your rating shows up here.</p>
+                <p>Please login so that your rating shows up here.</p>
                 <span v-for="rating in ratings" :key="rating.id">
                   <label>User id: {{ rating.user }} - </label> 
                   <star-rating :star-size="15" 
@@ -121,6 +121,7 @@ export default {
   mounted () {
     this.fetchProduct()
     this.fetchRating()
+    this.backUpViews()
   },
   computed: {
     colorCodeInStock () {
@@ -165,6 +166,7 @@ export default {
       }
       let req = await sendRequest('server/products/', data)
       this.product = req.data[0]
+      this.$store.commit('updateViews', this.product)
     },
     async fetchRating () {
       // Know about the values
@@ -215,6 +217,23 @@ export default {
       }
       return [false, null]
     },
+    async backUpViews() {
+      const timeInSecToBackup = 60
+      const now = new Date()
+      const prev_time = new Date(localStorage.getItem('lastViewsBackup'))
+      localStorage.setItem('lastViewsBackup', now)
+      if (prev_time) {
+        if ((now - prev_time) >= timeInSecToBackup * 1000) {
+          if(this.$store.state.user) {
+            let data = {
+              username: this.$store.state.user,
+              views: localStorage.getItem('views')
+            }
+            await sendRequest('server/views/', data)
+          }
+        }
+      }  
+    }
   }
 }
 </script>
