@@ -88,8 +88,7 @@ class KMeansClustering:
             random.shuffle(to_recommend_products)
 
         # get a product list including the previous IDs
-        self.recommended_products = to_recommend_products
-                
+        self.recommended_products = to_recommend_products      
     
     def get_rated_products(self):
         """
@@ -272,7 +271,6 @@ class KMeansClustering:
         # len(max_rated_product_id)) + 1 [See docstring for more details]
         from scipy.sparse import dok_matrix
         import numpy as np
-
         ratings_matrix = dok_matrix(
             (num_users, max(all_rated_product_ids) + 1),
             dtype=np.float32
