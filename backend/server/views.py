@@ -7,10 +7,12 @@ from django.contrib.auth import authenticate, login, logout
 
 from .serializers import ContactResponseSerializer, OrderSerializer, ProductSerializer, \
     CategorySerializer, RatingSerializer, SubCategorySerializer, CustomerSerializer, \
-    UserViewsSerializer
+    UserViewsSerializer, SliderImageSerializer, OfferSerializer
 from .models import ContactResponse, Product, Category, SubCategory, Customer, \
-    Order, Rating, UserViews
+    Order, Rating, UserViews, SliderImage, FeaturedProduct, FeaturedCategory, \
+    Offer
 from .recommendation import Recommendation
+from .kmeans import KMeansClustering
 
 class ContactView(APIView):
     model = ContactResponse
@@ -280,22 +282,23 @@ class RatingView(APIView):
         data = request.data
         qs = Product.objects.all()
         product = Product.objects.get(product_name=data['product_name'])
-        print(data)
+        user = User.objects.get(username=data['user_name'])
+        
+        kmeans = KMeansClustering(user)
 
         if (data["rating_option"] == "add"):
-            user = User.objects.get(username=data['user_name'])
             qs = Rating.objects.create(user=user, product=product, rating_value=data['rating_value'])
 
         elif (data["rating_option"] == "update"):
-            user = User.objects.get(username=data['user_name'])
             qs = Rating.objects.get(user=user, product=product)
             qs.rating_value = data['rating_value']
             qs.save()
             
         elif (data["rating_option"] == "delete"):
-            user = User.objects.get(username=data['user_name'])
             qs = Rating.objects.get(user=user, product=product)
             qs.delete()
+
+        kmeans.update_clusters()
             
         qs = Rating.objects.filter(product=product)
 
@@ -344,3 +347,56 @@ class RecommendationView(APIView):
         serializer = ProductSerializer(recommended_products, many=True)
 
         return Response(serializer.data)
+
+class SliderImageView(APIView):
+    model = SliderImage
+
+    def post(self, request, *args, **kwargs):
+        qs = SliderImage.objects.all()
+
+        serializer = SliderImageSerializer(qs, many=True)
+
+        return Response(serializer.data)
+
+class FeaturedCategoryView(APIView):
+    model = FeaturedCategory
+
+    def post(self, request, *args, **kwargs):
+        qs = FeaturedCategory.objects.all()
+        qs = Category.objects.filter(
+            id__in = list(qs.values_list('category', flat=True))
+        )
+        
+        serializer = CategorySerializer(qs, many=True)
+
+        return Response(serializer.data)
+
+class FeaturedProductView(APIView):
+    model = FeaturedProduct
+
+    def post(self, request, *args, **kwargs):
+        qs = FeaturedProduct.objects.all()
+        qs = Product.objects.filter(
+            id__in = list(qs.values_list('product', flat=True))
+        )
+        
+        serializer = ProductSerializer(qs, many=True)
+
+        return Response(serializer.data)
+
+class OfferView(APIView):
+    model = Offer
+
+    def post(self, request, *args, **kwargs):
+        qs = Offer.objects.all()
+        qs_product = Product.objects.filter(
+            id__in = list(qs.values_list('product', flat=True))
+        )
+
+        offer_serializer = OfferSerializer(qs, many=True)
+        product_serializer = ProductSerializer(qs_product, many=True)
+
+        return Response({
+            "offer_products" : product_serializer.data,
+            "offer_info" : offer_serializer.data
+        })

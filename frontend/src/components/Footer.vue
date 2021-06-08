@@ -11,7 +11,7 @@
                             <div class="logo">
                                 <img src="images/logo2.png" alt="#">
                             </div>
-                            <p class="text">Presenting with you best valued products at the cheapest rate.</p>
+                            <p class="text">Presenting to you best valued products at the cheapest rate.</p>
                             <p class="call">Got Question? Call us 24/7<span><a href="tel:014437123">+977 01 4437123</a></span></p>
                         </div>
                         <!-- End Single Widget -->

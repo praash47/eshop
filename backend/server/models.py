@@ -104,3 +104,28 @@ class Cluster(models.Model):
 
     def get_members(self):
         return "\n".join([u.username for u in self.users.all()])
+
+class SliderImage(models.Model):
+	image = models.ImageField(upload_to="shop/slider-images")
+
+class FeaturedCategory(models.Model):
+	category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+	class Meta:
+		verbose_name_plural = "Featured Categories"
+
+	def __str__(self):
+		return str(self.category)
+
+class FeaturedProduct(models.Model):
+	product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return str(self.product)
+
+class Offer(models.Model):
+	product = models.ForeignKey(Product, on_delete=models.CASCADE)
+	offer_price = models.FloatField()
+
+	def __str__(self):
+		return str(self.product)

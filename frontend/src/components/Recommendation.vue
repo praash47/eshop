@@ -27,9 +27,8 @@ export default {
       }
     },
     mounted() {
-      const to_update_in = 2000
-      this.getRecommendations()
-      setTimeout(this.getRecommendations, to_update_in)
+      const to_update_in = 5000
+      setInterval(this.getRecommendations, to_update_in)
     },
     methods: {
         openNav () {

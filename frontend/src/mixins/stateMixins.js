@@ -11,7 +11,10 @@ export default {
       },
       cart_total () {
         return this.$store.getters.cartTotal
-      }
+      },
+      isInWishlist() {
+          return this.$store.getters.isInWishlist(this.product)
+      },
     },
     methods: {
       updateCartFromLocalStorage () {
@@ -37,6 +40,12 @@ export default {
         } else {
           this.$store.commit('removeFromCart', this.product)
         }
+      },  
+      addToWishlist() {
+          this.$store.commit('addToWishlist', this.product)
+      },
+      removeFromWishlist() {
+          this.$store.commit('removeFromWishlist', this.product)
       }
     }
 }

@@ -2,11 +2,13 @@
     <div class="row">
         <h1>Featured Categories</h1>
         <div class="featured-cats">
-            <div v-for="cat in cats" :key="cat.id">
+            <div v-for="cat in featured_categories" :key="cat.id">
+                <router-link :to="'/shop-grid/' + cat.cat_name.toLowerCase()">
                 <div class="cat">
-                    <img src="https://via.placeholder.com/100" alt="Category picture">
-                    <a href="#">{{ cat.name }}</a>
+                    <img :src="'http://127.0.0.1:8000' + cat.cat_img" alt="Category picture">
+                    <a href="#">{{ cat.cat_name }}</a>
                 </div>
+                </router-link>
             </div>
         </div>
     </div>
@@ -42,20 +44,26 @@
     align-items: center;
     font-size: 1.5em;
 }
+.cat img {
+    width: 100px;
+}
 </style>
 <script>
+import { sendRequest } from '@/views/functions'
+
 export default {
   data () {
       return {
-          cats: [
-              {'id': 0, 'product_name': 'Jeans'},
-              {'id': 1, 'product_name': 'Laptops'},
-              {'id': 2, 'product_name': 'Mobile Phones'},
-              {'id': 3, 'product_name': 'Bags'},
-              {'id': 4, 'product_name': 'Beauty'},
-              {'id': 5, 'product_name': 'Drinks'},
-              {'id': 6, 'product_name': 'Copies'},
-          ]
+          featured_categories: ""
+      }
+  },
+  mounted () {
+      this.fetchFeaturedCategories()
+  },
+  methods: {
+      async fetchFeaturedCategories () {
+        let req = await sendRequest('server/featured_categories/')
+        this.featured_categories = req.data
       }
   }
 }

@@ -37,7 +37,7 @@
                 <tr v-for="item in cart" :key="item.id">
                   <td class="image" data-title="No">
                   <router-link :to="'/product/' + item.product_name">
-                    <img :src="'http://192.168.5.113:8000' + item.img1" :alt="item.product_name">
+                    <img :src="'http://127.0.0.1:8000' + item.img1" :alt="item.product_name">
                   </router-link>
                   </td>
                   <td class="product-des" data-title="Description">

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import ContactResponse, Product, Category, SubCategory, Customer, Order,\
-    Rating, UserViews
+    Rating, UserViews, SliderImage, FeaturedCategory, FeaturedProduct, Offer
 
 class ContactResponseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,4 +57,18 @@ class UserViewsSerializer(serializers.ModelSerializer):
         model = UserViews
         fields = [
             'id', 'user', 'views'
+        ]
+
+class SliderImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SliderImage
+        fields = [
+            'image'
+        ]
+
+class OfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = [
+            'id', 'product', 'offer_price'
         ]

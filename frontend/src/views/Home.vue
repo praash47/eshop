@@ -2,13 +2,13 @@
   <div class="app">
     <div class="row">      
       <Categories />
-      <Slider />
+      <Slider/>
     </div>
     <FeaturedCats />
-    <ProductsShowcase title="Featured Products" :products="test_products" />
+    <ProductsShowcase title="Featured Products" :products="featured_products" />
     <ProductsShowcase title="Trending Items" :products="trending_products"/>
     <ProductsShowcase title="New Arrivals" :products="latest_products" />
-    <ProductsShowcase title="Offers" :products="test_products" />
+    <ProductsShowcase title="Offers" :products="offer_products" />
   </div>
 </template>
 
@@ -32,26 +32,22 @@ export default {
   },
   data () {
     return {
-      test_products: [
-        {'id': 0, 'product_name': 'Book', 'price': 6000},
-        {'id': 1, 'product_name': 'Wool', 'price': 6000},
-        {'id': 2, 'product_name': 'Khadkulo', 'price': 10000},
-        {'id': 3, 'product_name': 'Water Bottle', 'price': 145000},
-        {'id': 4, 'product_name': 'Wooden Bed', 'price': 2000},
-        {'id': 5, 'product_name': 'Sofa', 'price': 1500},
-        {'id': 6, 'product_name': 'Cupboard', 'price': 400},
-        {'id': 7, 'product_name': 'Fan', 'price': 600},
-        {'id': 8, 'product_name': 'Clock', 'price': 300},
-      ],
       categories: {},
       latest_products: "",
-      trending_products: ""
+      trending_products: "",
+      featured_products: ""
+    }
+  },
+  computed: {
+    offer_products() {
+      return this.$store.state.offers
     }
   },
   methods: {
     fetchAllProducts () {
       this.fetchProductsByType("latest_products")
       this.fetchProductsByType("trending_products")
+      this.fetchFeaturedProducts()
     },
     async fetchProductsByType (products_type) {
       let data = {
@@ -59,6 +55,10 @@ export default {
       }
       let req = await sendRequest('server/products/', data)
       this[products_type] = req.data
+    },
+    async fetchFeaturedProducts () {
+      let req = await sendRequest('server/featured_products/')
+      this.featured_products = req.data
     }
   }
 }

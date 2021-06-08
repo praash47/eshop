@@ -10,7 +10,8 @@ const store = createStore({
         user: accessCookie("user"),
         cart: [],
         views: [],
-        wishlist: []
+        wishlist: [],
+        offers: []
     },
     getters: {
         productQuantity: state => product => {

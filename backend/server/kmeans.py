@@ -1,10 +1,38 @@
+import random
+
 from .models import User, Rating, Cluster, Product
 
 global UPDATE_STEP;
 UPDATE_STEP = 6
 
 class KMeansClustering:
+    """
+    This class computes kmeans clustering and is able to show products within user cluster
+    with similar product preferences.
+
+    Public Functions
+    ----------------
+    is_products_available(): Returns true if products are available through
+    kmeans, also assigns the recommended products if available. Only returns if 
+    true if there are 4 or more products available to recommend.
+
+    update_clusters(): Updates the kmeans cluster depending upon the update
+    step. 
+
+    Public Attributes
+    -----------------
+    recommended_products: the recommended product objects are set over
+    this variable by the kmeans clustering.
+
+    is_new_user: to specify if clusters are being created for a new or
+    old user. Is already false by default. 
+    """
     def __init__(self, user):
+        """
+        Parameters
+        ----------
+        user: user object to find kmeans clustering for.
+        """
         self.user = user
         self.rated_product_ids = set()
         self.recommended_products = []
@@ -25,7 +53,7 @@ class KMeansClustering:
             True or False
         """
         self.get_recommended_products()
-        if (self.recommended_products):
+        if (len(self.recommended_products) >= 4):
             return True
         return False
 
@@ -51,13 +79,17 @@ class KMeansClustering:
                 user_cluster_name
         )
 
+        # If more than 4 products, just get first four
+        to_recommend_products = Product.objects.filter( \
+            id__in=other_users_rated_products_ids
+        )
+        if len(to_recommend_products) > 4:
+            to_recommend_products = to_recommend_products[:4]
+            random.shuffle(to_recommend_products)
+
         # get a product list including the previous IDs
-        self.recommended_products = \
-            sorted(list(
-                Product.objects.filter( \
-                    id_in=other_users_rated_products_ids
-                )
-            ))
+        self.recommended_products = to_recommend_products
+                
     
     def get_rated_products(self):
         """
@@ -73,8 +105,8 @@ class KMeansClustering:
         """
         rated_products = Rating.objects.filter(user=self.user) \
             .prefetch_related('product')
-        self.rated_product_ids = map(lambda rating: rating.product.id, \
-             rated_products)
+        self.rated_product_ids = set(map(lambda rating: rating.product.id, \
+             rated_products))
 
     def get_user_cluster(self):
         """
@@ -122,13 +154,13 @@ class KMeansClustering:
         other_users_clusters = \
             Cluster.objects.get(name=user_cluster_name).users \
                 .exclude(username=self.user.username).all()
-        other_members_usernames = set(map( \
-            lambda user: user.username, other_users_clusters
+        other_members_user_objects = set(map( \
+            lambda user: user, other_users_clusters
         ))
 
         # get ratings by those users, excluding product rated by the request user
         other_users_ratings = \
-            Rating.objects.filter(user_name__in=other_members_usernames) \
+            Rating.objects.filter(user__in=other_members_user_objects) \
                 .exclude(product__id__in=self.rated_product_ids)
         other_users_rated_product_ids = set(map(
             lambda rating: rating.product.id, other_users_ratings

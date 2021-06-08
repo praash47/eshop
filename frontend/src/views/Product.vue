@@ -33,7 +33,7 @@
         <div class="row">
           <!-- product image section -->
           <div class="col-md-6 col-sm-12">
-            <img :src="'http://192.168.5.113:8000' + product.img1" :alt="product.product_name">
+            <img :src="'http://127.0.0.1:8000' + product.img1" :alt="product.product_name">
           </div>
 
           <!-- product description section -->
@@ -81,7 +81,10 @@
                   <i class="ti-shopping-cart"></i> Add to Cart
                 </button>
               </span> 
-              <button class="btn wishlist">
+              <button class="btn" v-if="isInWishlist" @click="removeFromWishlist()">
+                <i class="fa fa-times" aria-hidden="true"></i> Remove from Wishlist
+              </button>
+              <button class="btn wishlist" v-else @click="addToWishlist()">
                 <i class="fa fa-heart-o" aria-hidden="true"></i> Add to Wishlist
               </button>
             </span>

@@ -20,6 +20,7 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import Recommendation from './components/Recommendation.vue'
+import { sendRequest } from './views/functions'
 
 export default {
   data() {
@@ -39,6 +40,8 @@ export default {
 
     const wishlist = JSON.parse(localStorage.getItem('wishlist'))
     if (wishlist) this.$store.state.wishlist = wishlist
+
+    this.fetchOffers()
   },
   methods: {
     emitBack (message) {
@@ -47,6 +50,17 @@ export default {
     },
     resetMessage () {
       this.message = ""
+    },
+    async fetchOffers() {
+      let req = await sendRequest('server/offers/')
+      let offer_info = req.data.offer_info
+      let offer_products = req.data.offer_products
+      for (let i in offer_info) {
+        let id = offer_products[i].id
+        let offer = offer_info.find(i => i.product == id)
+        let offer_price = offer.offer_price
+        this.$store.state.offers.push({...offer_products[i], offer_price: offer_price})
+      }
     }
   }
 }
