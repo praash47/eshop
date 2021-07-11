@@ -106,7 +106,6 @@
 </template>
 <script>
 import { sendRequest } from './functions.js'
-
 export default {
   data () {
     return {
@@ -129,7 +128,7 @@ export default {
                 'message': vm.message,
                 'phone': vm.phone
             };
-            var r = sendRequest("post", 'http://127.0.0.1:8000/server/contact/', data)
+            var r = sendRequest('http://127.0.0.1:8000/server/contact/', data)
             r.then(function(response) {
                 console.log(response)
                 if (response['status'] == 200) {
