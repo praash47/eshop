@@ -29,7 +29,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 img, div {
   margin: 0;
   padding: 0;
